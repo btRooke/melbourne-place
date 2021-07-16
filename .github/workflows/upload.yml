@@ -20,6 +20,4 @@ jobs:
 
     steps:
       
-      - run: echo "${{ secrets.SSH_KEY }}" > SSH_KEY
-      - run: echo "Hello, World!" > test.txt
-      - run: scp StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i SSH_KEY test.txt pi@melbourneplace.net:~/
+      - run: ls -la
