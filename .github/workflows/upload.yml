@@ -31,7 +31,7 @@ jobs:
             Host mp
               HostName melbourneplace.net
               User pi
-              IdentityFiles ~/.ssh/mp_key
+              IdentityFile ~/.ssh/mp_key
 
       - name: Update `known_hosts`
         run: ssh-keyscan -H melbourneplace.net >> ~/.ssh/known_hosts
