@@ -14,7 +14,7 @@ on:
 
 jobs:
 
-  Deploy Site:
+  deploy-site:
 
     runs-on: ubuntu-latest
 
@@ -24,18 +24,20 @@ jobs:
 
         uses: shimataro/ssh-key-action@v2.3.0
         with:
-          - key: ${{ secrets.SSH_KEY }}
-          - name: mp_key
-          - known_hosts: "placeholder"
-          - config: |
-              Host mp
-                HostName melbourneplace.net
-                User pi
-                IdentityFiles ~/.ssh/mp_key
+          key: ${{ secrets.SSH_KEY }}
+          name: mp_key
+          known_hosts: "placeholder"
+          config: |
+            Host mp
+              HostName melbourneplace.net
+              User pi
+              IdentityFiles ~/.ssh/mp_key
 
       - name: Update `known_hosts`
-          run: ssh-keyscan -H melbourneplace.net >> ~/.ssh/known_hosts
+        run: ssh-keyscan -H melbourneplace.net >> ~/.ssh/known_hosts
+
+      - name: Create Files
+        run: echo "Hello, World!" > test.txt
 
       - name: Copy File
-          run: echo "Hello, World!" > test.txt
-          run: scp -i ~/.ssh/key test.txt pi@melbourneplace.net:~/test.txt
+        run: scp -i ~/.ssh/key test.txt pi@melbourneplace.net:~/test.txt
