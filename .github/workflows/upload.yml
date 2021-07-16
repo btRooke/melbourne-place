@@ -25,7 +25,13 @@ jobs:
         uses: shimataro/ssh-key-action@v2.3.0
         with:
           - key: ${{ secrets.SSH_KEY }}
+          - name: mp_key
           - known_hosts: "placeholder"
+          - config: |
+              Host mp
+                HostName melbourneplace.net
+                User pi
+                IdentityFiles ~/.ssh/mp_key
 
       - name: Update `known_hostst`
           run: ssh-keyscan melbourneplace.net >> ~/.ssh/known_hosts
