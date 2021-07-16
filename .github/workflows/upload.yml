@@ -40,4 +40,4 @@ jobs:
         run: echo "Hello, World!" > test.txt
 
       - name: Copy File
-        run: scp -i ~/.ssh/key test.txt pi@melbourneplace.net:~/test.txt
+        run: scp test.txt mp:~/test.txt
