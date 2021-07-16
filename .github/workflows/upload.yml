@@ -1,0 +1,25 @@
+name: update-site
+
+on: 
+
+  push:
+
+    branches:
+      - master
+
+  pull_request:
+
+    branches:
+      - master
+
+jobs:
+
+  deploy-site:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      
+      - run: echo "${{ secrets.SSH_KEY }}" > SSH_KEY
+      - run: echo "Hello, World!" > test.txt
+      - run: scp test.txt pi@melbourneplace.net:~/ -o "CheckHostIP=no"
