@@ -40,4 +40,4 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Update the server
-        run: rsync --exclude ".*" --delete -avz ./ mp:/var/www/html
+        run: rsync --exclude-from .deployIgnore --delete --delete-excluded -avz ./ mp:/var/www/html
