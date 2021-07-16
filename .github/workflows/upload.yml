@@ -36,5 +36,7 @@ jobs:
       - name: Update `known_hosts`
         run: ssh-keyscan -H melbourneplace.net >> ~/.ssh/known_hosts
 
+      - run: ls -la
+
       - name: Update the server
         run: rsync -avz ./ mp:~/test
