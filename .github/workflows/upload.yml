@@ -40,4 +40,4 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Update the server
-        run: rsync -avz ./ mp:~/test
+        run: rsync --delete -avz ./ mp:~/test
