@@ -36,10 +36,8 @@ jobs:
       - name: Update `known_hosts`
         run: ssh-keyscan -H melbourneplace.net >> ~/.ssh/known_hosts
 
-      - run: pwd
-      - run: ls -la ~
-      - run: ls -la ..
-      - run: ls -la 
+      - name: Checkout the current code
+        uses: actions/checkout@v2
 
       - name: Update the server
-        run: rsync -avz ${{ github.workspace }}/ mp:~/test
+        run: rsync -avz ./ mp:~/test
