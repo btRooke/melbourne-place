@@ -1,4 +1,4 @@
-name: update-site
+name: Deploy Site
 
 on: 
 
@@ -36,8 +36,5 @@ jobs:
       - name: Update `known_hosts`
         run: ssh-keyscan -H melbourneplace.net >> ~/.ssh/known_hosts
 
-      - name: Create Files
-        run: echo "Hello, World!" > test.txt
-
-      - name: Copy File
-        run: scp test.txt mp:~/test.txt
+      - name: Update the server
+        run: rsync . mp:~/test
