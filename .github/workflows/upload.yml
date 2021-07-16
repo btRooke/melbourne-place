@@ -25,6 +25,4 @@ jobs:
       - run: ssh-keyscan -H melbourneplace.net  >> ~/.ssh/known_hosts
       - run: echo "${{ secrets.SSH_KEY }}" > ~/.ssh/key
       - run: echo "Hello, World!" > test.txt
-      - run: scp test.txt pi@melbourneplace.net:~/test.txt
-
-
+      - run: scp -i ~/.ssh/key test.txt pi@melbourneplace.net:~/test.txt
