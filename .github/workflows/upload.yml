@@ -26,7 +26,7 @@ jobs:
         with:
           key: ${{ secrets.SSH_KEY }}
           name: mp_key
-          known_hosts: "placeholder"
+          known_hosts: "placeholder since IP is dynamic"
           config: |
             Host mp
               HostName melbourneplace.net
