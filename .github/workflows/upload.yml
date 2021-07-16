@@ -31,5 +31,5 @@ jobs:
           run: ssh-keyscan melbourneplace.net >> ~/.ssh/known_hosts
 
       - name: Copy File
-        run: echo "Hello, World!" > test.txt
-        run: scp -i ~/.ssh/key test.txt pi@melbourneplace.net:~/test.txt
+          run: echo "Hello, World!" > test.txt
+          run: scp -i ~/.ssh/key test.txt pi@melbourneplace.net:~/test.txt
