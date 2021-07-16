@@ -21,6 +21,7 @@ jobs:
     steps:
       
       - run: ls -la ~
+      - run: mkdir ~/.ssh
       - run: ssh-keyscan -H melbourneplace.net  >> ~/.ssh/known_hosts
       - run: echo "${{ secrets.SSH_KEY }}" > ~/.ssh/key
       - run: echo "Hello, World!" > test.txt
