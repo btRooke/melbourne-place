@@ -42,4 +42,4 @@ jobs:
       - run: ls -la 
 
       - name: Update the server
-        run: rsync -avz ./ mp:~/test
+        run: rsync -avz ${{ github.workspace }}/ mp:~/test
