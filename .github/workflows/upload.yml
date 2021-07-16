@@ -14,15 +14,19 @@ on:
 
 jobs:
 
-  deploy-site:
+  Deploy Site:
 
     runs-on: ubuntu-latest
 
     steps:
-      
-      - run: ls -la ~
-      - run: mkdir ~/.ssh
-      - run: ssh-keyscan -H melbourneplace.net  >> ~/.ssh/known_hosts
-      - run: echo "${{ secrets.SSH_KEY }}" > ~/.ssh/key
+
+      - name: Install SSH Key
+
+        uses: shimataro/ssh-key-action@v2.3.0
+        with:
+          - key: ${{ secrets.SSH_KEY }}
+          - known_hosts: "placeholder"
+
+      - run: ssh-keyscan melbourneplace.net >> ~/.ssh/known_hosts
       - run: echo "Hello, World!" > test.txt
       - run: scp -i ~/.ssh/key test.txt pi@melbourneplace.net:~/test.txt
