@@ -23,9 +23,9 @@ if ($socket === false) {
     $repsonse["status"] = -1;
     $response["message"] = "socket_create() failed: reason: " . socket_strerror(socket_last_error()) . "\n";
 
-    returnResponse($reponse);
+    returnResponse($response);
 
-    return();
+    return;
 }
 
 $status = socket_connect($socket, $DOORBELL_IP, $DOORBELL_PORT);
@@ -39,7 +39,7 @@ if ($status === false) {
 
     returnResponse($response);
     
-    return();
+    return;
 }
 
 // $in = "HEAD / HTTP/1.1\r\n";
