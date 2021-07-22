@@ -21,7 +21,7 @@ if ($socket === false) {
     http_response_code(500);
 
     $repsonse["status"] = -1;
-    $response["message"] = "socket_create() failed: reason: " . socket_strerror(socket_last_error()) . "\n";
+    $response["message"] = "Failed to create a socket connection: " . socket_strerror(socket_last_error()) . ".";
 
     returnResponse($response);
 
@@ -32,10 +32,10 @@ $status = socket_connect($socket, $DOORBELL_IP, $DOORBELL_PORT);
 
 if ($status === false) {
 
-    http_response_code(500);
+    http_response_code(503);
 
     $response["status"] = -2;
-    $response["message"] = "socket_connect() failed.\nReason: ($status) " . socket_strerror(socket_last_error($socket)) . "\n";
+    $response["message"] = "Could not connect connect to doorbell over local network.";
 
     returnResponse($response);
     
