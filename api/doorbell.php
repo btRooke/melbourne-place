@@ -4,7 +4,7 @@ function returnResponse($res) {
     echo json_encode($res);
 }
 
-$DOORBELL_IP = "192.168.1.123"; // placeholder
+$DOORBELL_IP = "192.168.1.194"; // placeholder
 $DOORBELL_PORT = 42069;
 
 header("Content-Type: application/json; charset=UTF-8");
