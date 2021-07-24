@@ -33,6 +33,7 @@ html, body {
 }
 
 .ringer {
+    font-family: 'Bebas Neue', cursive;
     background: white;
     border: none;
     color: black;
