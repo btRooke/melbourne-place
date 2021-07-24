@@ -59,6 +59,9 @@ while ($out = socket_read($socket, 2048)) {
 socket_close($socket);
 
 http_response_code(200);
+
+$response["status"] = 0;
+
 returnResponse($response);
 
 ?>
