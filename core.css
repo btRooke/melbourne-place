@@ -44,10 +44,12 @@ html, body {
 
 .ringer:hover {
     background: lightgrey;
+    cursor: pointer;
 }
 
 .ringer:active {
     background: darkgrey;
+    cursor: pointer
 }
 
 .noselect {
