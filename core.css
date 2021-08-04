@@ -4,6 +4,8 @@ html, body {
     padding: 0;
 
     font-family: 'Open Sans', sans-serif;
+    
+    position: relative;
 
 }
 
@@ -14,6 +16,9 @@ html, body {
 .fullScreen {
     height: 100%; /* 100vh is dodgy on mobile */
     width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
 
 .centreContent {
@@ -37,7 +42,7 @@ html, body {
     background: white;
     border: none;
     color: black;
-    border-radius: 10px;
+    border-radius: 15px;
     padding: 15px;
     font-size: 28px;
 }
@@ -61,3 +66,19 @@ html, body {
               user-select: none; /* Non-prefixed version, currently
                                     supported by Chrome, Edge, Opera and Firefox */
   }
+
+.overlay {
+    z-index: 10;
+}
+
+.overlay.hidden {
+    display: none;
+}
+
+.bellIconContainer {
+    width: 100px;
+    height: 100px;
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+}
