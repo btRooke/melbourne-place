@@ -57,6 +57,12 @@ html, body {
     cursor: pointer
 }
 
+@media (hover: none) {
+    .ringer {
+        color: black;
+    }
+}
+
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
       -webkit-user-select: none; /* Safari */

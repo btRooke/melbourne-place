@@ -18,14 +18,6 @@ bellButton = document.querySelector("#bell");
 
 ringAnimation = () => {
 
-    // hack below to stop mobile hover
-
-    const parent = bellButton.parentNode;
-    const next = bellButton.nextSibling;
-
-    parent.removeChild(bellButton);
-    setTimeout(() => parent.insertBefore(bellButton, next), 0);
-
     bellButton.disabled = true;
     document.querySelector(".overlay").setAttribute("class", "fullScreen centreContent noselect overlay");
 
