@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en-gb">
 
     <head>
 
@@ -6,9 +7,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="core.css">
 
+        <!-- for fonts -->
+
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans&display=swap" rel="stylesheet">
+
+        <!-- for bell animations -->
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.4/lottie.min.js"></script>
+
+        <!-- for progressive web apps -->
 
         <link rel="manifest" href="manifest.json">
 
@@ -33,11 +42,17 @@
                 <hr style="width: 100%; color: white">
 
                 <p>Ring our real doorbell in our real house!</p>
-                <button class="ringer" onclick="fetch('/api/doorbell.php')">Ring!</button>
+                <button id ="bell" class="ringer" onclick="ringBell()">Ring!</button>
 
             </div>
 
         </div>
+
+        <div id="overlay" class="fullScreen centreContent noselect overlay hidden">
+            <div class="bellIconContainer"></div>
+        </div>
+
+        <script src="js/main.js"></script>
 
     </body>
 

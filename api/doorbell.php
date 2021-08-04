@@ -20,7 +20,7 @@ if ($socket === false) {
 
     http_response_code(500);
 
-    $repsonse["status"] = -1;
+    $response["status"] = -1;
     $response["message"] = "Failed to create a socket connection: " . socket_strerror(socket_last_error()) . ".";
 
     returnResponse($response);
