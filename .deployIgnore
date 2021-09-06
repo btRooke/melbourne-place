@@ -2,4 +2,4 @@
 .github
 .deployIgnore
 README.md
-*.ino
+arduino-code
