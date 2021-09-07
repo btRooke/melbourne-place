@@ -45,7 +45,7 @@
 
             $listUsersQuery = "SELECT id, nickname FROM users";
 
-            if ($result = $mysqli -> query($listUsersQuery)) {
+            if ($result = $dbConnection -> query($listUsersQuery)) {
                 echo $result -> num_rows;    
             }
 
