@@ -37,24 +37,8 @@
 
         if ($_POST["key"] === "cooladmin123") {
 
-            $dbConnection = new mysqli($DB_HOSTNAME, $DB_USER, $DB_PASS, $DB_NAME);
-
-            if ($dbConnection -> connect_error) {
-                die("Could not connect to database: " . $conn->connect_error);
-            }
-
-            $listUsersQuery = "SELECT id, nickname FROM users";
-
-            if ($result = $dbConnection -> query($listUsersQuery)) {
-                echo $result -> num_rows;    
-            }
-
-            else {
-                echo "Failed.";
-            }
-              
-            $dbConnection -> close();
-        
+            echo "<h1>welcom to the admin page :)))</h1>";
+            
         }
 
         else {
