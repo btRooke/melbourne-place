@@ -39,11 +39,21 @@
 
             $dbConnection = new mysqli($DB_HOSTNAME, $DB_USER, $DB_PASS, $DB_NAME);
 
-            if ($conn->connect_error) {
+            if ($conn -> connect_error) {
                 die("Could not connect to database: " . $conn->connect_error);
             }
 
             $listUsersQuery = "SELECT id, nickname FROM users";
+
+            if ($result = $mysqli -> query($listUsersQuery)) {
+                echo $result -> num_rows;    
+            }
+
+            else {
+                echo "Failed.";
+            }
+              
+            $mysqli -> close();
         
         }
 
