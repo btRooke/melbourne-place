@@ -39,7 +39,7 @@
 
             $dbConnection = new mysqli($DB_HOSTNAME, $DB_USER, $DB_PASS, $DB_NAME);
 
-            if ($conn -> connect_error) {
+            if ($dbConnection -> connect_error) {
                 die("Could not connect to database: " . $conn->connect_error);
             }
 
