@@ -3,3 +3,4 @@
 .deployIgnore
 README.md
 *.ino
+sql
