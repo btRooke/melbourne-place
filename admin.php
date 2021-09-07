@@ -53,7 +53,7 @@
                 echo "Failed.";
             }
               
-            $mysqli -> close();
+            $dbConnection -> close();
         
         }
 
