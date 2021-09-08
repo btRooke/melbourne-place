@@ -1,7 +1,9 @@
-import network
+import network, webrepl
 
 SSID = "Matt LANcock"
 PASS = "quoththeravennevermore"
+
+webrepl.start()
 
 sta_if = network.WLAN(network.STA_IF)
 

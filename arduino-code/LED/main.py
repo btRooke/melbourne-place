@@ -19,24 +19,34 @@ def main(socket, led):
     while True:
         # Accept and decode request
         conn, addr = socket.accept()
-        data = conn.makefile().readlines()
+        print("Accepted a connection")
+
+        conn.setblocking(false)
+        data = conn.recv(2048).decode("utf-8")
         print("Received request from", addr)
+        print("Received script:\n", data)
 
         # Translate request into executable python
         tabs = 1
-        for i, line in enumerate(data):
-            data[i], tabs = interpret(line, tabs)
+        try:
+            for i, line in enumerate(data):
+                data[i], tabs = interpreter.interpret(line, tabs)
+        except:
+            conn.close()
+            continue
 
         script = '\n'.join(data)
+        print("Script translated to:\n", script)
 
         # Run the code in a task
         if task is not None:
             task.cancel()
         task = uasyncio.create_task(run(conn, script))
+        conn.close()
 
 async def run(conn, script):
     try:
-        exec(f"async def __script():\n{script}")
+        exec("async def __script():\n{0}".format(script))
     except Exception as e:
         conn.send(str(e).encode("utf-8"))
 
@@ -52,11 +62,10 @@ if __name__ == "__main__":
     # Get LED strip
     led = neopixel.NeoPixel(machine.Pin(4), 1)
     
-    if not led:
+    if led:
+        main(s, led)
+    else:
         print("Could not create a reference to the LED strip")
-        return
-
-    main(s, led)
 
 # The following script will cycle through the colour spectrum:
 """
