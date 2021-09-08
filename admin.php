@@ -6,6 +6,7 @@
         <title>Melbourne Place</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="core.css">
+        <link rel="stylesheet" href="admin.css">
 
         <!-- for fonts -->
 
@@ -27,32 +28,33 @@
 
         <div class="fullScreen centreContent noselect">
 
-            <div class="comingSoonBox">
+        <?php
 
-                <h1>Melbourne Place</h1>
+        $DB_HOSTNAME = "localhost";
+        $DB_USER     = "melbournePlace";
+        $DB_PASS     = "J1#23h7c$?.##{<#";
+        $DB_NAME     = "melbournePlace";
 
-                <p>Things coming soon:</p>
+        if ($_POST["key"] === "cooladmin123") {
 
-                <ul>
-                    <li>website-connected lights</li>
-                    <li>live temperature data</li>
-                    <li>party details</li>
-                </ul>
+            echo "<h1>welcom to the admin page :)))</h1>";
+            
+        }
 
-                <hr style="width: 100%; color: white">
+        else {
 
-                <p>Ring our real doorbell in our real house!</p>
-                <button id ="bell" class="ringer">Ring!</button>
-                
-            </div>
+            echo "<form action=\"\" method=\"post\">";
+            echo "<div>";
+            echo "<label>Enter Password: </label>";
+            echo "<input type=\"text\" name=\"key\" id=\"key\" required>";
+            echo "</div>";
+            echo "</form>";
+
+        }
+
+        ?>
 
         </div>
-
-        <div id="overlay" class="fullScreen centreContent noselect overlay hidden">
-            <div class="bellIconContainer"></div>
-        </div>
-
-        <script src="js/main.js"></script>
 
     </body>
 
