@@ -38,11 +38,15 @@ def interpret(line, tabs):
 
     success = RE_SAVE.match(line)
     if success:
-        return ("{0}led[0] = [r, g, b]".format(prefix), tabs)
+        return (
+            "{0}led[0].duty(r * 4)".format(prefix) +
+            "{0}led[1].duty(g * 4)".format(prefix) +
+            "{0}led[2].duty(b * 4)".format(prefix), 
+            tabs)
 
     success = RE_SET.match(line)
     if success:
-        return ("{0}{1} = {2}}".format(prefix, success.group(1), success.group(2)), tabs)
+        return ("{0}{1} = {2}".format(prefix, success.group(1), success.group(2)), tabs)
 
     success = RE_ADD.match(line)
     if success:

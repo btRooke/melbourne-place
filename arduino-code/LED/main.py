@@ -2,7 +2,7 @@
 import interpreter
 
 # Library imports
-import machine, socket, neopixel, uasyncio
+import machine, socket, uasyncio
 
 # Constants
 PORT = 8080
@@ -21,10 +21,10 @@ def main(socket, led):
         conn, addr = socket.accept()
         print("Accepted a connection")
 
-        conn.setblocking(false)
         data = conn.recv(2048).decode("utf-8")
         print("Received request from", addr)
-        print("Received script:\n", data)
+        print("Received script:")
+        print(data)
 
         # Translate request into executable python
         tabs = 1
@@ -33,6 +33,7 @@ def main(socket, led):
                 data[i], tabs = interpreter.interpret(line, tabs)
         except:
             conn.close()
+            fail(led)
             continue
 
         script = '\n'.join(data)
@@ -43,6 +44,11 @@ def main(socket, led):
             task.cancel()
         task = uasyncio.create_task(run(conn, script))
         conn.close()
+
+def fail(led):
+    led[0].duty(1023)
+    led[1].duty(0)
+    led[2].duty(0)
 
 async def run(conn, script):
     try:
@@ -60,48 +66,10 @@ if __name__ == "__main__":
     print("Listening on port", PORT)
 
     # Get LED strip
-    led = neopixel.NeoPixel(machine.Pin(4), 1)
-    
-    if led:
-        main(s, led)
-    else:
-        print("Could not create a reference to the LED strip")
+    pins = [
+        machine.Pin(14, machine.Pin.OUT), 
+        machine.Pin(12, machine.Pin.OUT),
+        machine.Pin(13, machine.Pin.OUT)]
 
-# The following script will cycle through the colour spectrum:
-"""
-set r 255
-set g 0
-set b 0
-save
-
-while 1
-    while g < 255
-        add g 1
-        wait 10
-        save
-
-    then while r > 0
-        sub r 1
-        wait 10
-        save
-
-    then while b < 255
-        add b 1
-        wait 10
-        save
-
-    then while g > 0
-        sub g 1
-        wait 10
-        save
-
-    then while r < 255
-        add g 1
-        wait 10
-        save
-
-    then while b > 0
-        sub b 1
-        wait 10
-        save
-"""
+    pwm = [machine.PWM(x, freq=50, duty=0) for x in pins]   
+    main(s, pwm)
