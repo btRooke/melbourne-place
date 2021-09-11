@@ -1,6 +1,6 @@
 .git
 .github
 .deployIgnore
-README.md
-*.ino
+arduino-code
 sql
+README.md
