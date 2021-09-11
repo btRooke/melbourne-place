@@ -59,15 +59,15 @@
 
                 <p>Control the LED strip in our living room.</p>
 
-                <button data-jscolor="{
+                <button class="colourPicker" data-jscolor="{
                     preset: 'small dark',
                     position: 'top',
                     onChange:'setStaticColour(this.toHEXString())'
                 }">Select Static Colour</button>
 
-                <div>
+                <div style="margin-top: 8px;">
                     <span>Preset:</span>
-                    <select id="preset" name="preset" class="presetButton" onchange="setPreset(this.value)">
+                    <select class="presetPicker" id="preset" name="preset" class="presetButton" onchange="setPreset(this.value)">
 
                         <?php
 
