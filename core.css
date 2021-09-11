@@ -14,20 +14,19 @@ html, body {
 }
 
 .fullScreen {
-    height: 100%; /* 100vh is dodgy on mobile */
+    min-height: 100vh; /* 100vh is dodgy on mobile */
     width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
 }
 
 .centreContent {
     display: flex;
     align-items: center;
     justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
 }
 
-.comingSoonBox {
+.sectionBox {
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -35,6 +34,7 @@ html, body {
     border-radius: 15px;
     background-color: #151515;
     color: #FAFDF6;
+    margin: 10px;
 }
 
 .ringer {
@@ -45,6 +45,7 @@ html, body {
     border-radius: 15px;
     padding: 15px;
     font-size: 28px;
+    margin: 16px;
 }
 
 .ringer:hover {

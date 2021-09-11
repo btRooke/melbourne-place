@@ -10,7 +10,7 @@ const bellAnimation = bodymovin.loadAnimation({
 
     rendererSettings: {
         preserverAspectRatio: "xMinYMin",
-    },
+    }
 
 });
 
