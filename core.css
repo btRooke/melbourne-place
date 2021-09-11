@@ -11,7 +11,18 @@ html, body {
 
 :is(h1, h2, h3, h4, h5, h6) {
     font-family: 'Bebas Neue', cursive;
+    margin: 8px;
 }
+
+p {
+    margin: 8px;
+    text-align: center;
+}
+
+ul {
+    margin: 8px;
+}
+
 
 .fullScreen {
     min-height: 100vh; /* 100vh is dodgy on mobile */
@@ -45,7 +56,7 @@ html, body {
     border-radius: 15px;
     padding: 15px;
     font-size: 28px;
-    margin: 16px;
+    margin: 8px;
 }
 
 .ringer:hover {
