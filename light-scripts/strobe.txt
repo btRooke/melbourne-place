@@ -5,11 +5,11 @@ while 1
 	set b 255
 	save
 
-	wait 20
+	wait 25
 
 	set r 0
 	set g 0
 	set b 0
 	save
 
-	wait 20
+	wait 25
