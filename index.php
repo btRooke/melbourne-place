@@ -38,7 +38,6 @@
                 <p>Things coming soon:</p>
 
                 <ul>
-                    <li>website-connected lights</li>
                     <li>live temperature data</li>
                     <li>party details</li>
                 </ul>
