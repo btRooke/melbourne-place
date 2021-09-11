@@ -74,11 +74,7 @@
                     $files = array_diff($allFiles, array('.', '..'));
 
                     foreach ($files as $file) {
-
-                        if (!(strcmp($file, ".") == 0 || strcmp($file, "..") == 0)) {
-                            echo sprintf("<option value=\"%s\">%s</option>", $file, $file);    
-                        }
-                        
+                        echo sprintf("<option value=\"%s\">%s</option>", $file, $file);
                     }
 
                     ?>
