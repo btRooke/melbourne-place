@@ -37,8 +37,8 @@
 
         if ($_POST["key"] === "cooladmin123") {
 
-            echo "<h1>welcom to the admin page :)))</h1>";
-            
+            echo "<h1>welcom to the admin page :)))</h1>";            
+
         }
 
         else {
