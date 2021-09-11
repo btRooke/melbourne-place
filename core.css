@@ -90,3 +90,11 @@ html, body {
     border-radius: 15px;
     padding: 15px;
 }
+
+.sectionBox.info {
+    border: 6px solid cadetblue;
+}
+
+.sectionBox.bell {
+    border: coral solid 6px;
+}
