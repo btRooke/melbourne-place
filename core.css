@@ -113,3 +113,7 @@ ul {
 .sectionBox.lights {
     border: lightcoral solid 6px;
 }
+
+.picker {
+    margin: 8px;
+}
