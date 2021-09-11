@@ -65,6 +65,23 @@
                     position: 'top',
                     onChange:'setStaticColour(this.toHEXString())'
                 }">
+
+                <select id="preset" name="preset">
+
+                    <option value="blank">blank</option>
+
+                    <?php
+
+                    $files = scandir("light-scripts");
+
+                    foreach ($files as $file) {
+                        echo sprintf("<option value=\"%s\">%s</option>", $file, $file);
+                    }
+
+                    ?>
+
+
+                </select>
                 
             </div>
 
