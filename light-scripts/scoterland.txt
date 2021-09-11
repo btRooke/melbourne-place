@@ -8,13 +8,13 @@ while 1
 	while g > 0
 
 		sub r 1
-		sub b 1
+		sub g 1
 		wait 10
 		save
 	
 	then while g < 255
 
 		add r 1
-		add b 1
+		add g 1
 		wait 10
 		save
