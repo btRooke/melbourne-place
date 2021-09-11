@@ -1,0 +1,35 @@
+set r 255
+set g 0
+set b 0
+save
+
+while 1
+    while g < 255
+        add g 1
+        wait 20
+        save
+
+    then while r > 0
+        sub r 1
+        wait 20
+        save
+
+    then while b < 255
+        add b 1
+        wait 20
+        save
+
+    then while g > 0
+        sub g 1
+        wait 20
+        save
+
+    then while r < 255
+        add r 1
+        wait 20
+        save
+
+    then while b > 0
+        sub b 1
+        wait 20
+        save
