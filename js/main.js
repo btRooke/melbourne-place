@@ -1,4 +1,4 @@
-// Doorbell
+// doorbell
 
 const bellAnimation = bodymovin.loadAnimation({
 

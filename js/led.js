@@ -1,13 +1,19 @@
-// LED
+setStaticColour = (colourCode) => {
 
-scriptUpload = document.querySelector("#ledscript");
+    fetch("api/lights.php", {
 
-setLedScript = () => {
-    fetch("/api/led.php", {
         method: "POST",
-        headers: {},
-        body: scriptUpload.files[0]
-    });
-}
 
-scriptUpload.addEventListener("change", setLedScript)
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            requestType: "static",
+            colourCode: colourCode
+        })
+
+    });
+
+    
+}

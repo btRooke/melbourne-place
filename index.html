@@ -21,6 +21,10 @@
 
         <link rel="manifest" href="manifest.json">
 
+        <!-- for colour picker -->
+
+        <script src="js/jscolor.min.js"></script>
+
     </head>
 
     <body>
@@ -55,8 +59,12 @@
                 <h1>Lights</h1>
 
                 <p>Control the LED strip in our living room.</p>
-                
-                <input type="color" id="lightcolour" name="lightcolour" value="#009090" class="picker">
+
+                <input value="FFA000" data-jscolor="{
+                    preset: 'small dark',
+                    position: 'right',
+                    onChange:'setStaticColour(this.toHEXString())'
+                }">
                 
             </div>
 
@@ -67,6 +75,7 @@
         </div>
 
         <script src="js/main.js"></script>
+        <script src="js/led.js"></script>
 
     </body>
 
