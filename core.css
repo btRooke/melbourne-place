@@ -98,3 +98,7 @@ html, body {
 .sectionBox.bell {
     border: coral solid 6px;
 }
+
+.sectionBox.lights {
+    border: lightcoral solid 6px;
+}
