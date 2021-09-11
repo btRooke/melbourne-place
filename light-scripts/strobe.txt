@@ -1,0 +1,15 @@
+while 1
+    
+	set r 255
+	set g 255
+	set b 255
+	save
+
+	wait 20
+
+	set r 255
+	set g 255
+	set b 255
+	save
+
+	wait 20
