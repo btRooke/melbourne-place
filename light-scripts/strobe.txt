@@ -7,9 +7,9 @@ while 1
 
 	wait 20
 
-	set r 255
-	set g 255
-	set b 255
+	set r 0
+	set g 0
+	set b 0
 	save
 
 	wait 20
