@@ -60,27 +60,30 @@
 
                 <p>Control the LED strip in our living room.</p>
 
-                <input value="FFA000" data-jscolor="{
+                <button data-jscolor="{
                     preset: 'small dark',
                     position: 'top',
                     onChange:'setStaticColour(this.toHEXString())'
-                }">
+                }">Select Static Colour</button>
 
-                <select id="preset" name="preset" onchange="setPreset(this.value)">
+                <div>
+                    <span>Preset:</span>
+                    <select id="preset" name="preset" class="presetButton" onchange="setPreset(this.value)">
 
-                    <?php
+                        <?php
 
-                    $allFiles = scandir("light-scripts"); // Or any other directory
-                    $files = array_diff($allFiles, array('.', '..'));
+                        $allFiles = scandir("light-scripts"); // Or any other directory
+                        $files = array_diff($allFiles, array('.', '..'));
 
-                    foreach ($files as $file) {
-                        echo sprintf("<option value=\"%s\">%s</option>", $file, $file);
-                    }
+                        foreach ($files as $file) {
+                            echo sprintf("<option value=\"%s\">%s</option>", $file, $file);
+                        }
 
-                    ?>
+                        ?>
 
 
-                </select>
+                    </select>
+                </div>
                 
             </div>
 

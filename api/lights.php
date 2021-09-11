@@ -35,12 +35,24 @@ if ($status === false) {
     return;
 }
 
-if ($_POST["requestType"] == "static") {
+$response["requestType"] = $_POST["requestType"];
+
+if ($_POST["requestType"] === "static") {
     list($r, $g, $b) = sscanf($_POST["colourCode"], "#%02x%02x%02x");
     $in = sprintf("set r %d\n set g %d\n set b %d\nsave\n", $r, $g, $b);
+    $out = "";
+
+    socket_write($socket, $in, strlen($in));
+
+    while ($out = socket_read($socket, 2048)) {
+        $response["message"] .= $out;
+    }
+
+    http_response_code(200);
+    $response["status"] = 0;
 }
 
-else if ($_POST["requestType"] == "preset") {
+else if ($_POST["requestType"] === "preset") {
 
     $allFiles = scandir("../light-scripts"); // Or any other directory
     $files = array_diff($allFiles, array('.', '..'));
@@ -50,16 +62,12 @@ else if ($_POST["requestType"] == "preset") {
         $in = file_get_contents("../light-scripts/" . $_POST["name"]);
         $out = "";
 
-        echo "Sending HTTP HEAD request...";
         socket_write($socket, $in, strlen($in));
-        echo "OK.\n";
 
-        echo "Reading response:\n\n";
         while ($out = socket_read($socket, 2048)) {
             $response["message"] .= $out;
         }
 
-        socket_close($socket);
         http_response_code(200);
         $response["status"] = 0;
     }
@@ -72,5 +80,6 @@ else if ($_POST["requestType"] == "preset") {
     
 }
 
+socket_close($socket);
 returnResponse($response);
 ?>
