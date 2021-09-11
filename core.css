@@ -107,7 +107,7 @@ ul {
 
 .sectionBox.info {
     border: 6px solid cadetblue;
-    width: 275px;
+    max-width: 260px;
 }
 
 .sectionBox.bell {

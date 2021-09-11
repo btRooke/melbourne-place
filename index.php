@@ -42,7 +42,7 @@
                     <li>party details</li>
                 </ul>
 
-                <p><i>Contact billy@melbourneplace.net with any queries.</i></p>
+                <p><i style="font-size: 80%">Contact billy@melbourneplace.net with any queries.</i></p>
                 
             </div>
 
