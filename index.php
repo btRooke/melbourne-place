@@ -66,16 +66,19 @@
                     onChange:'setStaticColour(this.toHEXString())'
                 }">
 
-                <select id="preset" name="preset">
-
-                    <option value="blank">blank</option>
+                <select id="preset" name="preset" onchange="setPreset(this.value)">
 
                     <?php
 
-                    $files = scandir("light-scripts");
+                    $allFiles = scandir("light-scripts"); // Or any other directory
+                    $files = array_diff($allFiles, array('.', '..'));
 
                     foreach ($files as $file) {
-                        echo sprintf("<option value=\"%s\">%s</option>", $file, $file);
+
+                        if (!(strcmp($file, ".") == 0 || strcmp($file, "..") == 0)) {
+                            echo sprintf("<option value=\"%s\">%s</option>", $file, $file);    
+                        }
+                        
                     }
 
                     ?>

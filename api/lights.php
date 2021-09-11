@@ -37,7 +37,28 @@ if ($status === false) {
 
 list($r, $g, $b) = sscanf($_POST["colourCode"], "#%02x%02x%02x");
 
-$in = sprintf("set r %d\n set g %d\n set b %d\nsave\n", $r, $g, $b);
+if ($_POST["requestType"] == "static") {
+    $in = sprintf("set r %d\n set g %d\n set b %d\nsave\n", $r, $g, $b);
+}
+
+else if ($_POST["requestType"] == "preset") {
+
+    $allFiles = scandir("../light-scripts"); // Or any other directory
+    $files = array_diff($allFiles, array('.', '..'));
+
+    if (in_array($_POST["name"], $files)) {
+        $in = file_get_contents("../light-scripts/" . $_POST["name"]);
+    }
+
+    else {
+        http_response_code(500);
+        $response["status"] = -69;
+        $response["message"] = "Stop hacking :("
+        return;
+    }
+    
+}
+
 $out = "";
 
 echo "Sending HTTP HEAD request...";
