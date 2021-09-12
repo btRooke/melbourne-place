@@ -16,11 +16,14 @@ led = [
         machine.Pin(13, machine.Pin.OUT)]
     ]
 
+lookup = [round(cie1931(float(L) / 255) * 255) for L in range(256)]
+
 # Main routine
 async def main(reader, writer):
     try:
         global task
         global led
+        global lookup
 
         # Accept and decode request
         print("Accepted a connection")
@@ -48,7 +51,7 @@ async def main(reader, writer):
         if task is not None:
             task.cancel()
         task = uasyncio.current_task()
-        await exec_async(script, led)
+        await exec_async(script, led, lookup)
         task = None
 
     # Catch task getting cancelled by the next request
@@ -61,10 +64,10 @@ async def main(reader, writer):
         writer.close()
 
 # Asynchronously execute a string as a function
-async def exec_async(func, led):
+async def exec_async(func, led, lookup):
     print("Executing")
     exec("async def __script(r, g, b, led):\n{0}".format(func))
-    await locals()['__script'](0, 0, 0, led)
+    await locals()['__script'](0, 0, 0, led, lookup)
 
 # Set LEDs to red and print error message on failure
 async def fail(msg):
@@ -73,6 +76,14 @@ async def fail(msg):
     led[0].duty(1023)
     led[1].duty(0)
     led[2].duty(0)
+
+# Implementation of the CIE 1931 lightness formula to create a lookup table for dimming
+def cie1931(L):
+    L = L*100.0
+    if L <= 8:
+        return (L/903.3)
+    else:
+        return ((L+16.0)/119.0)**3
 
 # On executing, start a TCP socket
 if __name__ == "__main__":

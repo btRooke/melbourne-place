@@ -39,9 +39,9 @@ def interpret(line, tabs):
     success = RE_SAVE.search(line)
     if success:
         return (
-            "{0}led[0].duty(r * 4)\n".format(prefix) +
-            "{0}led[1].duty(g * 4)\n".format(prefix) +
-            "{0}led[2].duty(b * 4)".format(prefix), 
+            "{0}led[0].duty(lookup[r])\n".format(prefix) +
+            "{0}led[1].duty(lookup[g])\n".format(prefix) +
+            "{0}led[2].duty(lookup[b])".format(prefix), 
             tabs)
 
     success = RE_SET.search(line)
