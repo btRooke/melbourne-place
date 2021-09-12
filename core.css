@@ -107,6 +107,7 @@ ul {
 
 .sectionBox.info {
     border: 6px solid cadetblue;
+    max-width: 260px;
 }
 
 .sectionBox.bell {
@@ -114,7 +115,7 @@ ul {
 }
 
 .sectionBox.lights {
-    border: lightcoral solid 6px;
+    border: crimson solid 6px;
 }
 
 .picker {

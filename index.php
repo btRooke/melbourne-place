@@ -41,6 +41,8 @@
                     <li>live temperature data</li>
                     <li>party details</li>
                 </ul>
+
+                <p><i style="font-size: 80%">Contact billy@melbourneplace.net with any queries.</i></p>
                 
             </div>
 
