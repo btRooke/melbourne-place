@@ -46,6 +46,7 @@ ul {
     background-color: #151515;
     color: #FAFDF6;
     margin: 10px;
+    box-shadow: 0 0 8px #888888;
 }
 
 .ringer {
