@@ -51,7 +51,12 @@
                 <h1>Doorbell</h1>
 
                 <p>Ring our real doorbell in our real house!</p>
-                <button id ="bell" class="ringer">Ring!</button>
+                <button id="bell" class="ringer">Ring!</button>
+
+                <div style="margin-top: 8px;">
+                    <input type="text" id="morseMessage"></input>
+                    <button id="sendMorse">Send</button>
+                </div>
                 
             </div>
             

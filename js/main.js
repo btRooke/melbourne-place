@@ -1,4 +1,4 @@
-// doorbell
+// doorbell animation
 
 const bellAnimation = bodymovin.loadAnimation({
 
@@ -41,3 +41,14 @@ ringBell = () => {
 };
 
 bellButton.addEventListener("click", ringBell);
+
+morseButton = document.querySelector("#sendMorse");
+morseButton.addEventListener("click", () => {
+
+    morseBox = document.querySelector("#morseMessage");
+
+    if (morseBox.value.length > 0) {
+        morseRing(morseBox.value);
+    }
+
+});
