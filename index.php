@@ -77,7 +77,10 @@
                         $files = array_diff($allFiles, array('.', '..'));
 
                         foreach ($files as $file) {
-                            echo sprintf("<option value=\"%s\">%s</option>", $file, $file);
+
+                            $filenameNoExtension = pathinfo($file, PATHINFO_FILENAME);
+                            echo sprintf("<option value=\"%s\">%s</option>\n", $file, $filenameNoExtension);
+
                         }
 
                         ?>
