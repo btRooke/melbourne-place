@@ -97,8 +97,9 @@
             <div class="bellIconContainer"></div>
         </div>
 
-        <script src="js/main.js"></script>
+        <script src="js/doorbell.js"></script>
         <script src="js/led.js"></script>
+        <script src="js/main.js"></script>
 
     </body>
 
