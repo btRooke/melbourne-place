@@ -11,26 +11,23 @@ def interpret(script):
 
     # Get token stream
     words = script.split()
-    tokens = deque((), len(words))
+    tokens = collections.deque((), len(words))
 
     for i in words:
         tokens.append(i)
 
-    result = "async def __script(r, g, b, led, lookup):"
+    result = "async def __script(r, g, b, led, lookup):\n"
     tabs = 1
 
     while len(tokens) > 0:
         token = tokens.popleft()
+        print(token)
 
         if token == "then":
             tabs -= 1
 
-        elif token == "while":
-            result, tokens = addWhile(result, tokens, tabs)
-            tabs += 1
-
-        elif token == "if":
-            result, tokens = addIf(result, tokens, tabs)
+        elif token == "while" or token == "if":
+            result, tokens = addLoop(result, token, tokens, tabs)
             tabs += 1
 
         elif token == "repeat":
@@ -43,8 +40,8 @@ def interpret(script):
         elif token == "wait":
             result, tokens = addWait(result, tokens, tabs)
 
-        elif checkValue(token, False, True):
-            result, tokens = addOp(result, tokens, tabs)
+        elif RE_COLOUR.search(token):
+            result, tokens = addOp(result, token, tokens, tabs)
 
         else:
             raise ValueError("Could not match token '{0}' to a known command".format(tokens[i]))
@@ -52,23 +49,29 @@ def interpret(script):
     return result
 
 
-def addWhile(result, tokens, tabs):
+def addLoop(result, token, tokens, tabs):
     condition = tokens.popleft()
 
     if condition == "random":
         condition, tokens = addRandom(tokens)
+    
+    elif RE_COLOUR.search(condition):
+        op = tokens.popleft()
 
-    line = "while eval('{0}', {{}}, {{'r': r, 'b': b, 'g': g}}):".format(condition)
-    return (addLine(result, line, tabs), tokens)
+        if op == "<" or op == "<=" or op == "==" or op == ">=" or op == ">":
+            value = tokens.popleft()
 
+            if value == "random":
+                value, tokens = addRandom(tokens)
+            else:
+                checkValue(value, True, True)
 
-def addIf(result, tokens, tabs):
-    condition = tokens.popleft()
+            condition = "{0} {1} {2}".format(condition, op, value)
 
-    if condition == "random":
-        condition, tokens = addRandom(tokens)
+        else:
+            raise ValueError("Unrecognised operator '{0}'".format(op))
 
-    line = "if eval('{0}', {{}}, {{'r': r, 'b': b, 'g': g}}):".format(condition)
+    line = "{0} eval('{1}', {{}}, {{'r': r, 'b': b, 'g': g}}):".format(token, condition)
     return (addLine(result, line, tabs), tokens)
 
 
@@ -86,8 +89,8 @@ def addFor(result, tokens, tabs):
 
 def addSave(result, tabs):
     result = addLine(result, "led[0].duty(lookup[r])", tabs)
-    result = addLine(result, "led[0].duty(lookup[g])", tabs)
-    return addLine(result, "led[0].duty(lookup[b])", tabs)
+    result = addLine(result, "led[1].duty(lookup[g])", tabs)
+    return addLine(result, "led[2].duty(lookup[b])", tabs)
 
 
 def addWait(result, tokens, tabs):
@@ -106,21 +109,19 @@ def addWait(result, tokens, tabs):
         if int(minimum) > int(maximum):
             raise ValueError("Random value's minimum cannot be greater than its maximum")
         
-        value = "random.randint({1}, {2})".format(colour, minimum, maximum)
+        value = "random.randint({0}, {1})".format(minimum, maximum)
     
     else:
         checkValue(value, True, True)
         if int(value) < 10:
             raise ValueError("Wait interval is too short, must be at least 10ms")
 
-    line = "await uasyncio.sleep_ms({1})".format(value)
+    line = "await uasyncio.sleep_ms({0})".format(value)
     return (addLine(result, line, tabs), tokens)
 
 
-def addOp(result, colour, op, value, tabs):
-    colour = tokens.popleft()
+def addOp(result, colour, tokens, tabs):
     checkValue(colour, False, True)
-    
     op = tokens.popleft()
 
     value = tokens.popleft()
@@ -131,7 +132,7 @@ def addOp(result, colour, op, value, tabs):
 
     if op == "=" or op == "+=" or op == "-=" or op == "*=" or op == "/=":
         line = "{0} {1} {2}".format(colour, op, value)
-        return addLine(result, line, tabs)
+        return (addLine(result, line, tabs), tokens)
 
     raise ValueError("Unrecognised operator '{0}'".format(op))
 
@@ -146,7 +147,7 @@ def addRandom(tokens):
     if (minimum > maximum):
         raise ValueError("Random value's minimum cannot be greater than its maximum")
 
-    line = "random.randint({1}, {2})".format(colour, minimum, maximum)
+    line = "int(round(((random.getrandbits(10) / 1023) * ({0} - {1})) + {1}))".format(maximum, minimum)
     return (line, tokens)
 
 
@@ -155,14 +156,10 @@ def addLine(program, line, tabs):
 
 
 def checkValue(value, canBeNumber, canBeColour):
-    if canBeNumber:
-        isNumber = RE_NUMBER.search(value)
-        if isNumber:
-            return
+    if canBeNumber and RE_NUMBER.search(value):
+        return
     
-    if canBeColour:
-        isColour = RE_COLOUR.search(value)
-        if isColour:
-            return
+    if canBeColour and RE_COLOUR.search(value):
+        return
 
-    raise ValueError("Expected value '{0}' to be a number or colour variable".format(value))    
+    raise ValueError("Expected value '{0}' to be a number or colour variable".format(value)) 
