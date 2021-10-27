@@ -28,9 +28,11 @@ simpleRing = () => {
 
 morseRing = (message) => {
 
-    callBellAPI({
-        morseMessage: message
-    });
+    alert(message);
+
+    // callBellAPI({
+    //     morseMessage: message
+    // });
 
 }
 
