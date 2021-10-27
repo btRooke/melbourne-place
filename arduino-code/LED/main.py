@@ -2,7 +2,7 @@
 import interpreter, dimming
 
 # Library imports
-import machine, socket, uasyncio
+import machine, socket, uasyncio, random
 
 # Constants
 PORT = 8080
@@ -37,15 +37,12 @@ async def main(reader, writer):
         # Translate request into executable python
         tabs = 1
         try:
-            for i, line in enumerate(data):
-                data[i], tabs = interpreter.interpret(line, tabs)
+            script = interpreter.interpret(data)
+            print("Script translated to:")
+            print(script)
         except Exception as e:
             fail(str(e))
             return
-
-        script = '\n'.join(data)
-        print("Script translated to:")
-        print(script)
 
         # Run the code in a task, cancelling the previous task
         if task is not None:
@@ -66,7 +63,7 @@ async def main(reader, writer):
 # Asynchronously execute a string as a function
 async def exec_async(func, led, lookup):
     print("Executing")
-    exec("async def __script(r, g, b, led, lookup):\n{0}".format(func))
+    exec(func)
     await locals()['__script'](0, 0, 0, led, lookup)
 
 # Set LEDs to red and print error message on failure

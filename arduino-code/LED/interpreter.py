@@ -1,87 +1,168 @@
-import re
+import re, collections
 
 # Compiled regex
-RE_THEN = re.compile(r"then")
-RE_WHILE = re.compile(r"while (.*?)$")
-RE_IF = re.compile(r"if (.*?)$")
-RE_REPEAT = re.compile(r"repeat (\d+)")
-RE_SAVE = re.compile(r"save")
-RE_SET = re.compile(r"set ([rgb]) (\d+)")
-RE_ADD = re.compile(r"add ([rgb]) (\d+)")
-RE_SUB = re.compile(r"sub ([rgb]) (\d+)")
-RE_MUL = re.compile(r"mul ([rgb]) (\d+)")
-RE_DIV = re.compile(r"div ([rgb]) (\d+)")
-RE_WAIT = re.compile(r"wait (\d+)")
+RE_NUMBER = re.compile(r"(\d+)")
+RE_COLOUR = re.compile(r"([rgb])")
 
-def interpret(line, tabs):
-    # Ignore empty lines
-    if re.match(r"^\s*$", line):
-        return ("", tabs)
 
-    # 'then' means the current loop has ended, reduce indentation
-    if RE_THEN.search(line):
-        tabs -= 1
+def interpret(script):
+    # Replace all whitespace with single spaces
+    script = re.sub(r"\s+", ' ', script)
 
-    prefix = "\t" * tabs
+    # Get token stream
+    words = script.split()
+    tokens = deque((), len(words))
 
-    success = RE_WHILE.search(line)
-    if success:
-        return ("{0}while eval('{1}', {{}}, {{'r': r, 'b': b, 'g': g}}):".format(prefix, success.group(1)), tabs + 1)
+    for i in words:
+        tokens.append(i)
 
-    success = RE_IF.search(line)
-    if success:
-        return ("{0}if eval('{1}', {{}}, {{'r': r, 'b': b, 'g': g}}):".format(prefix, success.group(1)), tabs + 1)
+    result = "async def __script(r, g, b, led, lookup):"
+    tabs = 1
 
-    success = RE_REPEAT.search(line)
-    if success:
-        return ("{0}for i in range({1}):".format(prefix, success.group(1)),  tabs + 1)
+    while len(tokens) > 0:
+        token = tokens.popleft()
 
-    success = RE_SAVE.search(line)
-    if success:
-        return (
-            "{0}led[0].duty(lookup[r])\n".format(prefix) +
-            "{0}led[1].duty(lookup[g])\n".format(prefix) +
-            "{0}led[2].duty(lookup[b])".format(prefix), 
-            tabs)
+        if token == "then":
+            tabs -= 1
 
-    success = RE_SET.search(line)
-    if success:
-        return ("{0}{1} = {2}".format(prefix, success.group(1), success.group(2)), tabs)
+        elif token == "while":
+            result, tokens = addWhile(result, tokens, tabs)
+            tabs += 1
 
-    success = RE_ADD.search(line)
-    if success:
-        return (
-            "{0}{1} += {2}\n".format(prefix, success.group(1), success.group(2)) +
-            "{0}{1} %= 256".format(prefix, success.group(1)), 
-            tabs)
+        elif token == "if":
+            result, tokens = addIf(result, tokens, tabs)
+            tabs += 1
 
-    success = RE_SUB.search(line)
-    if success:
-        return (
-            "{0}{1} -= {2}\n".format(prefix, success.group(1), success.group(2)) +
-            "{0}{1} %= 256".format(prefix, success.group(1)), 
-            tabs)
+        elif token == "repeat":
+            result, tokens = addFor(result, tokens, tabs)
+            tabs += 1
 
-    success = RE_MUL.search(line)
-    if success:
-        return (
-            "{0}{1} *= {2}\n".format(prefix, success.group(1), success.group(2)) +
-            "{0}{1} %= 256".format(prefix, success.group(1)), 
-            tabs)
+        elif token == "save":
+            result = addSave(result, tabs)
 
-    success = RE_DIV.search(line)
-    if success:
-        if int(success.group(2)) > 0:
-            return (
-                "{0}{1} /= {2}\n".format(prefix, success.group(1), success.group(2)) +
-                "{0}{1} %= 256".format(prefix, success.group(1)), 
-                tabs)
-        raise ZeroDivisionError("Caught attempt to divide by zero")
+        elif token == "wait":
+            result, tokens = addWait(result, tokens, tabs)
 
-    success = RE_WAIT.search(line)
-    if success:
-        if int(success.group(1)) >= 10:
-            return ("{0}await uasyncio.sleep_ms({1})".format(prefix, success.group(1)), tabs)
-        raise ValueError("Wait interval is too short, must be at least 10ms")
+        elif checkValue(token, False, True):
+            result, tokens = addOp(result, tokens, tabs)
 
-    raise ValueError("Could not match line '{0}' to a known command".format(line))
+        else:
+            raise ValueError("Could not match token '{0}' to a known command".format(tokens[i]))
+
+    return result
+
+
+def addWhile(result, tokens, tabs):
+    condition = tokens.popleft()
+
+    if condition == "random":
+        condition, tokens = addRandom(tokens)
+
+    line = "while eval('{0}', {{}}, {{'r': r, 'b': b, 'g': g}}):".format(condition)
+    return (addLine(result, line, tabs), tokens)
+
+
+def addIf(result, tokens, tabs):
+    condition = tokens.popleft()
+
+    if condition == "random":
+        condition, tokens = addRandom(tokens)
+
+    line = "if eval('{0}', {{}}, {{'r': r, 'b': b, 'g': g}}):".format(condition)
+    return (addLine(result, line, tabs), tokens)
+
+
+def addFor(result, tokens, tabs):
+    iterations = tokens.popleft()
+
+    if iterations == "random":
+        iterations, tokens = addRandom(tokens)
+    else:
+        checkValue(iterations, True, True)
+
+    line = "for i in range({0}):".format(iterations)
+    return (addLine(result, line, tabs), tokens)
+
+
+def addSave(result, tabs):
+    result = addLine(result, "led[0].duty(lookup[r])", tabs)
+    result = addLine(result, "led[0].duty(lookup[g])", tabs)
+    return addLine(result, "led[0].duty(lookup[b])", tabs)
+
+
+def addWait(result, tokens, tabs):
+    value = tokens.popleft()
+
+    if value == "random":
+        minimum = tokens.popleft()
+        maximum = tokens.popleft()
+
+        checkValue(minimum, True, True)
+        checkValue(maximum, True, True)
+
+        if int(minimum) < 10:
+            raise ValueError("Wait interval is too short, must be at least 10ms")
+        
+        if int(minimum) > int(maximum):
+            raise ValueError("Random value's minimum cannot be greater than its maximum")
+        
+        value = "random.randint({1}, {2})".format(colour, minimum, maximum)
+    
+    else:
+        checkValue(value, True, True)
+        if int(value) < 10:
+            raise ValueError("Wait interval is too short, must be at least 10ms")
+
+    line = "await uasyncio.sleep_ms({1})".format(value)
+    return (addLine(result, line, tabs), tokens)
+
+
+def addOp(result, colour, op, value, tabs):
+    colour = tokens.popleft()
+    checkValue(colour, False, True)
+    
+    op = tokens.popleft()
+
+    value = tokens.popleft()
+    if value == "random":
+        value, tokens = addRandom(tokens)
+    else:
+        checkValue(value, True, True)
+
+    if op == "=" or op == "+=" or op == "-=" or op == "*=" or op == "/=":
+        line = "{0} {1} {2}".format(colour, op, value)
+        return addLine(result, line, tabs)
+
+    raise ValueError("Unrecognised operator '{0}'".format(op))
+
+
+def addRandom(tokens):
+    minimum = tokens.popleft()
+    maximum = tokens.popleft()
+
+    checkValue(minimum, True, True)
+    checkValue(maximum, True, True)
+
+    if (minimum > maximum):
+        raise ValueError("Random value's minimum cannot be greater than its maximum")
+
+    line = "random.randint({1}, {2})".format(colour, minimum, maximum)
+    return (line, tokens)
+
+
+def addLine(program, line, tabs):
+    return program + ("\t" * tabs) + line + "\n"
+
+
+def checkValue(value, canBeNumber, canBeColour):
+    if canBeNumber:
+        isNumber = RE_NUMBER.search(value)
+        if isNumber:
+            return
+    
+    if canBeColour:
+        isColour = RE_COLOUR.search(value)
+        if isColour:
+            return
+
+    raise ValueError("Expected value '{0}' to be a number or colour variable".format(value))    
