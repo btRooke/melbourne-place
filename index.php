@@ -51,11 +51,16 @@
                 <h1>Doorbell</h1>
 
                 <p>Ring our real doorbell in our real house!</p>
+
                 <button id="bell" class="ringer">Ring!</button>
 
-                <div style="margin-top: 8px;">
+                <hr>
+
+                <p>Send a morse message to the doorbell.</p>
+
+                <div>
                     <input type="text" id="morseMessage"></input>
-                    <button id="sendMorse">Send</button>
+                    <button id="sendMorse" class="generalButton" style="margin-left: 10px;">Send</button>
                 </div>
                 
             </div>
@@ -72,7 +77,9 @@
                     onChange:'setStaticColour(this.toHEXString())'
                 }">Select Static Colour</button>
 
-                <div style="margin-top: 8px;">
+                <hr>
+
+                <div>
                     <span>Preset:</span>
                     <select class="presetPicker" id="preset" name="preset" class="presetButton" onchange="setPreset(this.value)">
 

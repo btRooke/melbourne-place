@@ -15,7 +15,8 @@ html, body {
 }
 
 p {
-    margin: 8px;
+    margin-bottom: 15px;
+    margin-top: 0px;
     text-align: center;
 }
 
@@ -57,7 +58,6 @@ ul {
     border-radius: 15px;
     padding: 15px;
     font-size: 28px;
-    margin: 8px;
 }
 
 .ringer:hover {
@@ -139,4 +139,37 @@ ul {
     padding: 8px;
     margin-left: 5px;
     border-radius: 10px;
+}
+
+hr {
+    color: white;
+    background-color: white;
+    width: 100%;
+    margin: 15px;
+}
+
+.generalButton {
+    font-family: 'Bebas Neue', cursive;
+    background: white;
+    border: none;
+    color: black;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 20px;
+}
+
+.generalButton:hover {
+    background: lightgrey;
+    cursor: pointer;
+}
+
+.ringeneralButtonger:active {
+    background: darkgrey;
+    cursor: pointer
+}
+
+@media (hover: none) {
+    .generalButton {
+        color: black;
+    }
 }
