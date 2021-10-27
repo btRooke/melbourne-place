@@ -39,7 +39,7 @@ $response["requestType"] = $_POST["requestType"];
 
 if ($_POST["requestType"] === "static") {
     list($r, $g, $b) = sscanf($_POST["colourCode"], "#%02x%02x%02x");
-    $in = sprintf("set r %d\n set g %d\n set b %d\nsave\n", $r, $g, $b);
+    $in = sprintf("r = %d\n g = %d\n b = %d\nsave\n", $r, $g, $b);
     $out = "";
 
     socket_write($socket, $in, strlen($in));
