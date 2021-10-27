@@ -46,7 +46,6 @@ if (array_key_exists("morseMessage", $_POST)) {
 
 $out = "";
 
-echo "Reading response:\n\n";
 while ($out = socket_read($socket, 2048)) {
     $response["message"] .= $out;
 }
