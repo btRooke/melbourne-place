@@ -5,8 +5,8 @@ save
 
 while 1
 
-    r = random 220 255
-    g = random 0 30
+    r = random 230 255
+    g = random 30 50
 
     save
 
