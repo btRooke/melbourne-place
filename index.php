@@ -79,7 +79,7 @@
                         foreach ($files as $file) {
 
                             $filenameNoExtension = pathinfo($file, PATHINFO_FILENAME);
-                            echo sprintf("<option value=\"%s\">%s</option>\n", $file, $filenameNoExtension);
+                            echo sprintf("<option value=\"%s\">%s</option>", $file, $filenameNoExtension);
 
                         }
 
