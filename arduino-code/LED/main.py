@@ -29,13 +29,13 @@ async def main(reader, writer):
         print("Accepted a connection")
 
         asbytes = await reader.read(2048)
-        data = asbytes.decode("utf-8").split('\n')
+        data = asbytes.decode("utf-8")
         
         print("Received script:")
         print(data)
 
         # Translate request into executable python
-        tabs = 1
+        script = ""
         try:
             script = interpreter.interpret(data)
             print("Script translated to:")
