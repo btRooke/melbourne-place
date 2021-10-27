@@ -242,7 +242,6 @@ void setup() {
 }
 
 void readString(WiFiClient client) {
-  
 }
 
 void handleRequest(WiFiClient client) {

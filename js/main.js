@@ -36,7 +36,7 @@ ringAnimation = () => {
 }
 
 ringBell = () => {
-    fetch("/api/doorbell.php");
+    simpleRing();
     ringAnimation();
 };
 

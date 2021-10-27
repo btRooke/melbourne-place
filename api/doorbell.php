@@ -7,12 +7,10 @@ function returnResponse($res) {
 $DOORBELL_IP = "192.168.1.194"; // most certainly a security risk
 $DOORBELL_PORT = 42069;
 
+$_POST = json_decode(file_get_contents('php://input'), true); // decoding the posted JSON
+
 header("Content-Type: application/json; charset=UTF-8");
 $response = array();
-
-/*
- * Lots of this is copied from https://www.php.net/manual/en/sockets.examples.php.
- */
 
 $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 
@@ -42,14 +40,11 @@ if ($status === false) {
     return;
 }
 
-// $in = "HEAD / HTTP/1.1\r\n";
-// $in .= "Host: www.example.com\r\n";
-// $in .= "Connection: Close\r\n\r\n";
-$out = "";
+if (array_key_exists("morseMessage", $_POST)) {
+    socket_write($socket, $_POST["morseMessage"], strlen($_POST["morseMessage"]));
+}
 
-// echo "Sending HTTP HEAD request...";
-// socket_write($socket, $in, strlen($in));
-// echo "OK.\n";
+$out = "";
 
 echo "Reading response:\n\n";
 while ($out = socket_read($socket, 2048)) {
