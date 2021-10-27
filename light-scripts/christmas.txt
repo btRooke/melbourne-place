@@ -1,0 +1,13 @@
+r = 255
+g = 20
+b = 0
+save
+
+while 1
+
+    r = random 190 255
+    g = random 32 64
+
+    save
+
+    wait 100
