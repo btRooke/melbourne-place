@@ -10,4 +10,4 @@ while 1
 
     save
 
-    wait 100
+    wait 50
