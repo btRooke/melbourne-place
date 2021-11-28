@@ -1,4 +1,3 @@
-
 -- creating the database
 
 DROP DATABASE IF EXISTS melbournePlace;
