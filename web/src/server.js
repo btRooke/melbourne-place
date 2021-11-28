@@ -16,7 +16,7 @@ const port = process.argv[2] ? process.argv[2] : 3000;
 const app = express();
 const io = new Server(http.createServer(app));
 
-// ======== request middleware ========
+// ======== express middleware ========
 
 app.use(cors());
 
@@ -40,13 +40,13 @@ app.post("/doorbell/ring", doorbell.ringHandler);
 
 app.post("/doorbell/morse", doorbell.ringHandler);
 
-app.post("/lights/setStatic", lights.setPresetsHandler);
+app.post("/lights/setStatic", lights.setPresetHandler);
 
-app.post("/lights/setPreset", lights.setPresetsHandler);
+app.post("/lights/setPreset", lights.setPresetHandler);
 
 app.post("/lights/presets", lights.getPresetsHandler);
 
-// ======== socket IO ========
+// ======== sockets IO ========
 
 io.on("connection", socket => {
 
