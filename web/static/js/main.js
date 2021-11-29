@@ -14,7 +14,7 @@ const bellAnimation = bodymovin.loadAnimation({
 
 });
 
-bellButton = document.querySelector("#bell");
+const bellButton = document.querySelector("#bell");
 
 // very hacky - apologies reader
 
@@ -35,17 +35,35 @@ ringAnimation = () => {
 
 }
 
-ringBell = () => {
-    simpleRing();
-    ringAnimation();
-};
+// bell stuff
 
-bellButton.addEventListener("click", ringBell);
+const bellBox = document.querySelector("#bellBox");
 
-morseButton = document.querySelector("#sendMorse");
+const socket = io();
+
+socket.on("error", message => alert(message));
+
+bellButton.addEventListener("pointerdown", () => {
+    socket.emit("on");
+    console.log("Ringing started.");
+    bellBox.setAttribute("class", "sectionBox bell active");
+});
+
+function bellOff() {
+    socket.emit("off");
+    console.log("Ringing stopped.");
+    bellBox.setAttribute("class", "sectionBox bell");
+}
+
+bellButton.addEventListener("touchend", bellOff); // for mobile
+document.addEventListener("pointerup", bellOff);
+
+// morse stuff
+
+const morseBox = document.querySelector("#morseMessage");
+const morseButton = document.querySelector("#sendMorse");
+
 morseButton.addEventListener("click", () => {
-
-    morseBox = document.querySelector("#morseMessage");
 
     if (morseBox.value.length > 0) {
         morseRing(morseBox.value);

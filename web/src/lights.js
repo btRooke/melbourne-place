@@ -1,17 +1,18 @@
 const fs = require("fs");
-const config = require("../config");
 
-function setStaticHandler() {
+const setStaticHandler = (req, res) => {
+    res.status(501);
+}
 
-};
+const setPresetHandler = (req, res) => {
+    res.status(501);
+}
 
-function setPresetHandler() {
+const getPresetsHandler = (req, res) => {
 
-};
+    console.log(req);
 
-function getPresetsHandler(req, res) {
-
-    fs.readdir(testFolder, (err, files) => {
+    fs.readdir("light-scripts", (err, files) => {
 
         if (err) {
             res.status(500);
@@ -22,11 +23,9 @@ function getPresetsHandler(req, res) {
             res.json(files);
         }
 
-        res.end();
-
     });
 
-};
+}
 
 module.exports = {
     setStaticHandler,

@@ -14,37 +14,37 @@ const port = process.argv[2] ? process.argv[2] : 3000;
 // ======== initialise express and socket IO ========
 
 const app = express();
-const io = new Server(http.createServer(app));
+const server = http.createServer(app);
+const io = new Server(server);
 
-// ======== express middleware ========
+// ======== expess configuration ========
+
+// cross origin requests
 
 app.use(cors());
+
+// logging
 
 app.use((req, res, next) => { // log requests
     console.log(`${req.method} for ${req.url} from ${req.hostname}.`);
     next();
 });
 
-app.use((err, req, res, next) => {
-    console.error(`Error ${err.statusCode}: ${err.statusMessage}.`);
-    next();
-});
+// parse body to JSON
 
-app.use(express.static(staticDirectory)); // server static files
+app.use(express.json());
 
-app.use(express.json()); // parse body to JSON
+app.post("/doorbell/morse", doorbell.morseHandler);
 
-// ======== API endpoints ========
-
-app.post("/doorbell/ring", doorbell.ringHandler);
-
-app.post("/doorbell/morse", doorbell.ringHandler);
-
-app.post("/lights/setStatic", lights.setPresetHandler);
+app.post("/lights/setStatic", lights.setStaticHandler);
 
 app.post("/lights/setPreset", lights.setPresetHandler);
 
-app.post("/lights/presets", lights.getPresetsHandler);
+app.get("/lights/presets", lights.getPresetsHandler);
+
+// serve static files
+
+app.use(express.static(staticDirectory));
 
 // ======== sockets IO ========
 
@@ -72,6 +72,6 @@ app.use((req, res, next) => {
 
 // ======== start the server ========
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Listening on ${port}...`);
 });

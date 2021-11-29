@@ -1,6 +1,6 @@
 callBellAPI = (request) => {
 
-    fetch("/api/doorbell.php", {
+    fetch("/doorbell/morse", {
 
         method: "POST",
 
@@ -20,10 +20,6 @@ callBellAPI = (request) => {
         
     });
 
-}
-
-simpleRing = () => {
-    callBellAPI({});
 }
 
 morseRing = (message) => {
