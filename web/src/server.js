@@ -36,11 +36,11 @@ app.use(express.json());
 
 app.post("/doorbell/morse", doorbell.morseHandler);
 
-app.post("/lights/setStatic", lights.setStaticHandler);
+app.post("/lights/static", lights.lightHandler);
 
-app.post("/lights/setPreset", lights.setPresetHandler);
+app.post("/lights/preset", lights.lightHandler);
 
-app.get("/lights/presets", lights.getPresetsHandler);
+app.get("/lights/presets", lights.presetHandler);
 
 // serve static files
 

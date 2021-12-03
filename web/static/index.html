@@ -40,7 +40,7 @@
 
                 <h1>Melbourne Place</h1>
 
-                <p>Things coming soon:</p>
+                <p>Things coming soon&trade;:</p>
 
                 <ul>
                     <li>live temperature data</li>
@@ -79,7 +79,7 @@
                 <button class="colourPicker" data-jscolor="{
                     preset: 'small dark',
                     position: 'top',
-                    onChange:'setStaticColour(this.toHEXString())'
+                    onChange: 'setStaticColour(this.toHEXString())'
                 }">Select Static Colour</button>
 
                 <hr>
@@ -87,9 +87,7 @@
                 <div>
                     <span>Preset:</span>
                     <select class="presetPicker" id="preset" name="preset" class="presetButton" onchange="setPreset(this.value)">
-
                         <?php
-
                         $allFiles = scandir("light-scripts"); // Or any other directory
                         $files = array_diff($allFiles, array('.', '..'));
 
@@ -99,10 +97,7 @@
                             echo sprintf("<option value=\"%s\">%s</option>", $file, $filenameNoExtension);
 
                         }
-
                         ?>
-
-
                     </select>
                 </div>
                 
@@ -116,7 +111,7 @@
 
         <script src="/socket.io/socket.io.js"></script>
         <script src="js/doorbell.js"></script>
-        <script src="js/led.js"></script>
+        <script src="js/lights.js"></script>
         <script src="js/main.js"></script>
 
     </body>

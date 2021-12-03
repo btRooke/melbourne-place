@@ -1,41 +1,29 @@
 callLightAPI = (request) => {
-
-    fetch("api/lights.php", {
-
+    fetch(`lights/${request.type}`, {
         method: "POST",
-
         headers: {
             "Content-Type": "application/json"
         },
-
         body: JSON.stringify(request)
-
     })
     .then(res => res.json())
     .then(res => {
-
-        if (res.status == -2) {
-            alert("The lights aren't on right now...");
+        if (res.status >= 400) {
+            alert(res.body["message"]);
         }
-        
     });
-
 }
 
 setStaticColour = (colourCode) => {
-
     callLightAPI({
-        requestType: "static",
-        colourCode: colourCode
+        type: "static",
+        payload: colourCode
     });
-    
 }
 
 setPreset = (presetName) => {
-
     callLightAPI({
-        requestType: "preset",
-        name: presetName
+        type: "preset",
+        payload: presetName
     });
-
 }
