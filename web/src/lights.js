@@ -20,10 +20,16 @@ const lightHandler = (req, res) => {
     switch (type) {
         // Generate from the given colour
         case "static":
-            let colour = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(payload);
-            script =  `r = ${colour[1]}\n`;
-            script += `g = ${colour[2]}\n`;
-            script += `b = ${colour[3]}`;
+
+            let colourMatches = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(payload);
+
+            let colours = colourMatches.slice(1);
+            colours = colours.map(hex => parseInt(hex, 16));
+
+            script =  `r = ${colours[0]}\n`;
+            script += `g = ${colours[1]}\n`;
+            script += `b = ${colours[2]}\n`;
+            script += "save";
             break;
 
         // Load from the given file
@@ -58,7 +64,7 @@ const lightHandler = (req, res) => {
     }
 
     // Send the script
-    console.log(`Sending ${payload}`);
+    console.log(`Static ${payload}`);
     const lights = new net.Socket();
 
     lights.connect({
@@ -67,16 +73,26 @@ const lightHandler = (req, res) => {
     });
 
     lights.on("connect", () => {
+
         lights.write(script);
-        res.status(200);
         lights.destroy();
+
+        res.status(200);
+        res.json({
+            message: "Success!"
+        });
+
     });
 
     lights.on("error", () => {
+
+        lights.destroy();
+
         res.status(500);
         res.send("Failed to connect to lights - they're probably off");
-        lights.destroy();
+
     });
+    
 }
 
 // Returns the names of all available preset files

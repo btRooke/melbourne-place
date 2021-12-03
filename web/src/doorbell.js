@@ -4,7 +4,7 @@ const realtimeHandler = (socket) => {
 
     socket.on("on", () => {
 
-        console.log("Bell on!");
+        console.log(`${socket.id} bell on!`);
 
         const doorbell = new net.Socket();
 
@@ -27,7 +27,7 @@ const realtimeHandler = (socket) => {
 
     socket.on("off", () => {
 
-        console.log("Bell off!");
+        console.log(`${socket.id} bell off!`);
 
         const doorbell = new net.Socket();
 
