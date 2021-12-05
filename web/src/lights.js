@@ -35,16 +35,16 @@ const lightHandler = (req, res) => {
         // Load from the given file
         case "preset":
             let filename = sanitize(payload);
-            fs.readFileSync(`light-scripts/${filename}`, 'utf-8', (err, data) => {
-                if (err) {
-                    res.status(400);
-                    res.send("Couldn't open the given file");
-                }
-                else {
-                    script = data;
-                }
-            })
-            break;
+
+            try {
+                script = fs.readFileSync(`light-scripts/${filename}`, 'utf-8');
+                break;
+            }
+            catch {
+                res.status(404);
+                res.send("Couldn't open the given file");
+                return;
+            }
 
         // Type check
         default:
@@ -73,7 +73,6 @@ const lightHandler = (req, res) => {
     });
 
     lights.on("connect", () => {
-
         lights.write(script);
         lights.destroy();
 
@@ -81,30 +80,25 @@ const lightHandler = (req, res) => {
         res.json({
             message: "Success!"
         });
-
     });
 
     lights.on("error", () => {
-
         lights.destroy();
 
         res.status(500);
         res.send("Failed to connect to lights - they're probably off");
-
     });
-    
 }
 
 // Returns the names of all available preset files
 const presetHandler = (req, res) => {
-    console.log(req);
-
     fs.readdir("light-scripts", (err, files) => {
         if (err) {
             res.status(500);
             res.send("Failed to read light presets.");
         }
         else {
+            res.status(200);
             res.json(files);
         }
     });

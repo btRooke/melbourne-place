@@ -70,3 +70,26 @@ morseButton.addEventListener("click", () => {
     }
 
 });
+
+// Light presets
+
+let presetList = document.querySelector("#preset");
+
+fetch("lights/presets").then(res => {
+    if (res.status == 200) {
+        // Loop through each file name, adding it as an option to the preset list
+        res.json().then(filenames => {
+            let option;
+
+            for (let i = 0; i < filenames.length; i++) {
+                option = document.createElement("option");
+                option.text = filenames[i].split('.').slice(0, -1).join('.');
+                option.value = filenames[i];
+                presetList.add(option);
+            }
+        })
+    }
+    else {
+        console.warn("Failed to request light preset file list");
+    }
+})

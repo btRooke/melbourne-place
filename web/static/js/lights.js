@@ -6,9 +6,8 @@ callLightAPI = (request) => {
         },
         body: JSON.stringify(request)
     })
-    .then(res => res.json())
     .then(res => {
-        if (res.status >= 400) {
+        if (!res.ok) {
             alert(res.body["message"]);
         }
     });

@@ -11,10 +11,9 @@ callBellAPI = (request) => {
         body: JSON.stringify(request)
 
     })
-    .then(res => res.json())
     .then(res => {
 
-        if (res.status != 0) {
+        if (!res.ok) {
             alert("The doorbell couldn't be bonged at this time...");
         }
         

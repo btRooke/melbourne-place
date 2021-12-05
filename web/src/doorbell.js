@@ -52,7 +52,7 @@ const realtimeHandler = (socket) => {
 
 const morseHandler = (req, res) => {
 
-    let message = res.body["morseMessage"];
+    let message = req.body["morseMessage"];
 
     if (message) {
 
