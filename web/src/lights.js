@@ -64,7 +64,7 @@ const lightHandler = (req, res) => {
     }
 
     // Send the script
-    console.log(`Static ${payload}`);
+    console.log(`Setting lights to ${payload}`);
     const lights = new net.Socket();
 
     lights.connect({

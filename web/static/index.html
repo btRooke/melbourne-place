@@ -85,8 +85,9 @@
                 <hr>
 
                 <div>
-                    <span>Preset:</span>
-                    <select class="presetPicker" id="preset" name="preset" class="presetButton" onchange="setPreset(this.value)"></select>
+                    <select class="presetPicker" id="preset" name="preset" class="presetButton" onclick="setPreset(this.value)">
+                        <option hidden disabled selected value>Select Preset</option>    
+                    </select>
                 </div>
                 
             </div>
