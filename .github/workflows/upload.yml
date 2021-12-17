@@ -37,7 +37,7 @@ jobs:
         run: ssh-keyscan -H melbourneplace.net >> ~/.ssh/known_hosts
 
       - name: Stop the current process
-        run: ssh mp "npm run kill --prefix melbourne-place"
+        run: ssh mp "npm run kill --prefix melbourne-place || true"
 
       - name: Checkout the current code
         uses: actions/checkout@v2
