@@ -37,16 +37,16 @@ jobs:
         run: ssh-keyscan -H melbourneplace.net >> ~/.ssh/known_hosts
 
       - name: Stop the current process
-        run: ssh mp "npm run kill --prefix melbourne-place || true"
+        run: ssh mp "pm2 stop melbournePlace"
 
       - name: Checkout the current code
         uses: actions/checkout@v2
 
-      - name: Update modules - `npm install`
-        run: ssh mp "npm install --prefix ~/melbourne-place"
-
       - name: Upload to server
         run: rsync --delete --delete-excluded -avz ./web/* mp:~/melbourne-place
 
+      - name: Update modules - `npm install`
+        run: ssh mp "npm install --prefix ~/melbourne-place"
+
       - name: Restart the process
-        run: ssh mp "npm run deploy --prefix melbourne-place"
+        run: ssh mp "pm2 start melbournePlace"
