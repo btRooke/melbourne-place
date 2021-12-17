@@ -4,8 +4,6 @@ const realtimeHandler = (socket) => {
 
     socket.on("on", () => {
 
-        console.log(`${socket.id} bell on!`);
-
         const doorbell = new net.Socket();
 
         doorbell.connect({
@@ -26,8 +24,6 @@ const realtimeHandler = (socket) => {
     });
 
     socket.on("off", () => {
-
-        console.log(`${socket.id} bell off!`);
 
         const doorbell = new net.Socket();
 
@@ -55,8 +51,6 @@ const morseHandler = (req, res) => {
     let message = req.body["morseMessage"];
 
     if (message) {
-
-        console.log(`Morsing ${message}!`);
 
         const doorbell = new net.Socket();
 
