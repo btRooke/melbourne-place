@@ -42,6 +42,9 @@ jobs:
       - name: Checkout the current code
         uses: actions/checkout@v2
 
+      - name: `npm install`
+        run: ssh mp "npm install --prefix ~/melbourne-place"
+
       - name: Upload to server
         run: rsync --delete --delete-excluded -avz ./web/* mp:~/melbourne-place
 
