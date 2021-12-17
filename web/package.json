@@ -4,8 +4,7 @@
   "description": "The website for the top party location in St Andrews.",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "deploy": "node src/server.js 443"
+    "start": "node src/server.js"
   },
   "repository": {
     "type": "git",
