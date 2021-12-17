@@ -64,7 +64,7 @@
                 <p>Send a morse message to the doorbell.</p>
 
                 <div>
-                    <input type="text" id="morseMessage"></input>
+                    <input type="text" id="morseMessage">
                     <button id="sendMorse" class="generalButton" style="margin-left: 10px;">Send</button>
                 </div>
                 
@@ -84,11 +84,9 @@
 
                 <hr>
 
-                <div>
-                    <select class="presetPicker" id="preset" name="preset" class="presetButton" onclick="setPreset(this.value)">
-                        <option hidden disabled selected value>Select Preset</option>    
-                    </select>
-                </div>
+                <select class="presetPicker" id="preset">
+                    <option hidden disabled selected value>Select Preset</option>
+                </select>
                 
             </div>
 

@@ -16,8 +16,6 @@ const bellAnimation = bodymovin.loadAnimation({
 
 const bellButton = document.querySelector("#bell");
 
-// very hacky - apologies reader
-
 ringAnimation = () => {
 
     bellButton.disabled = true;
@@ -90,6 +88,8 @@ fetch("lights/presets").then(res => {
         })
     }
     else {
-        console.warn("Failed to request light preset file list");
+        console.warn("Failed to request light preset file list!");
     }
 })
+
+presetList.addEventListener("change", e => setPreset(e.target.value));
