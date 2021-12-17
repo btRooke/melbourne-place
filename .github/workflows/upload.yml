@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Upload to server
-        run: rsync --delete --delete-excluded -avz ./web mp:~/melbourne-place
+        run: rsync --delete --delete-excluded -avz ./web/* mp:~/melbourne-place
 
       - name: Restart the process
         run: ssh mp "npm run deploy --prefix melbourne-place"
