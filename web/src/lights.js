@@ -1,6 +1,7 @@
 const fs = require("fs");
 const net = require("net");
 const sanitize = require("sanitize-filename");
+const localSocketTimeout = 250;
 
 // Sets the lights to a static colour or preset
 // Uses req's type value to determine which
@@ -65,13 +66,17 @@ const lightHandler = (req, res) => {
 
     // Send the script
     const lights = new net.Socket();
+    lights.setTimeout(localSocketTimeout);
 
     lights.connect({
         host: "192.168.1.179",
         port: 8080
     });
 
+    console.log("conn");
+
     lights.on("connect", () => {
+        console.log("suc");
         lights.write(script);
         lights.destroy();
 
@@ -83,10 +88,16 @@ const lightHandler = (req, res) => {
 
     lights.on("error", () => {
         lights.destroy();
-
         res.status(500);
-        res.send("Failed to connect to lights - they're probably off");
+        res.send("Something went wrong whilst connecting to the lights - let us know if this happens.");
     });
+
+    lights.on("timeout", () => {
+        lights.destroy();
+        res.status(500);
+        res.send("Connection to lights timed out - they're probably off.")
+    });
+
 }
 
 // Returns the names of all available preset files

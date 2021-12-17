@@ -39,17 +39,15 @@ const bellBox = document.querySelector("#bellBox");
 
 const socket = io();
 
-socket.on("error", message => alert(message));
+socket.on("error", message => console.error(message));
 
 bellButton.addEventListener("pointerdown", () => {
     socket.emit("on");
-    console.log("Ringing started.");
     bellBox.setAttribute("class", "sectionBox bell active");
 });
 
 function bellOff() {
     socket.emit("off");
-    console.log("Ringing stopped.");
     bellBox.setAttribute("class", "sectionBox bell");
 }
 
@@ -74,7 +72,7 @@ morseButton.addEventListener("click", () => {
 let presetList = document.querySelector("#preset");
 
 fetch("lights/presets").then(res => {
-    if (res.status == 200) {
+    if (res.ok) {
         // Loop through each file name, adding it as an option to the preset list
         res.json().then(filenames => {
             let option;

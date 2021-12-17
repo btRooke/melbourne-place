@@ -17,7 +17,7 @@ callLightAPI = (request) => {
     .then(res => {
 
         if (!res.ok) {
-            alert(res.statusText);
+            res.text().then(text => alert(text));
         }
 
     });

@@ -1,10 +1,12 @@
 const net = require("net");
+const localSocketTimeout = 250;
 
 const realtimeHandler = (socket) => {
 
     socket.on("on", () => {
 
         const doorbell = new net.Socket();
+        doorbell.setTimeout(localSocketTimeout);
 
         doorbell.connect({
             host: "192.168.1.194",
@@ -25,7 +27,8 @@ const realtimeHandler = (socket) => {
 
     socket.on("off", () => {
 
-        const doorbell = new net.Socket();
+        const doorbell = new net.Socket()
+        doorbell.setTimeout(localSocketTimeout);
 
         doorbell.connect({
             host: "192.168.1.194",
@@ -38,7 +41,12 @@ const realtimeHandler = (socket) => {
         });
 
         doorbell.on("error", () => {
-            socket.emit("error", "Failed to connect to doorbell; it's probably off.")
+            socket.emit("error", "Something went wrong whilst connecting to the bell.")
+            doorbell.destroy();
+        });
+
+        doorbell.on("timeout", () => {
+            socket.emit("error", "Doorbell connect timed out - it's probably off.")
             doorbell.destroy();
         });
 
@@ -53,6 +61,7 @@ const morseHandler = (req, res) => {
     if (message) {
 
         const doorbell = new net.Socket();
+        doorbell.setTimeout(localSocketTimeout);
 
         doorbell.connect({
             host: "192.168.1.194",
@@ -76,7 +85,16 @@ const morseHandler = (req, res) => {
         doorbell.on("error", () => {
 
             res.status(500);
-            res.write("Failed to connect to doorbell; it's probably off.");
+            res.write("Something went wrong whilst connecting to the doorbell - let us know if this happens.");
+
+            doorbell.destroy();
+
+        });
+
+        doorbell.on("timeout", () => {
+
+            res.status(500);
+            res.send("Failed to connect to the doorbell - it's probably off.")
 
             doorbell.destroy();
 
