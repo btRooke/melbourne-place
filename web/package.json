@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "deploy": "pm2 start src/server.js 443 --name melbournePlace",
+    "deploy": "pm2 start npm --name melbournePlace -- start 443",
     "kill": "pm2 stop melbournePlace"
   },
   "repository": {
