@@ -73,10 +73,7 @@ const lightHandler = (req, res) => {
         port: 8080
     });
 
-    console.log("conn");
-
     lights.on("connect", () => {
-        console.log("suc");
         lights.write(script);
         lights.destroy();
 
