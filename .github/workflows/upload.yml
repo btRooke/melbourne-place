@@ -37,7 +37,7 @@ jobs:
         run: ssh-keyscan -H melbourneplace.net >> ~/.ssh/known_hosts
 
       - name: Stop the current process
-        run: ssh mp "npm kill --prefix melbourne-place"
+        run: ssh mp "npm run kill --prefix melbourne-place"
 
       - name: Checkout the current code
         uses: actions/checkout@v2
@@ -46,4 +46,4 @@ jobs:
         run: rsync --delete --delete-excluded -avz ./web mp:/melbourne-place
 
       - name: Restart the process
-        run: ssh mp "npm deploy --prefix melbourne-place"
+        run: ssh mp "npm run deploy --prefix melbourne-place"
