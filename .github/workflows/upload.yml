@@ -36,17 +36,14 @@ jobs:
       - name: Update `known_hosts`
         run: ssh-keyscan -H melbourneplace.net >> ~/.ssh/known_hosts
 
-      - name: SSH to server
-        run: ssh melbourneplace.net -l pi
-
-      - name: Move to correct directory
-        run: cd melbourne-place
-
       - name: Stop the current process
-        run: pm2 stop melbournePlace
+        run: ssh pi@melbourneplace.net "~/stop.sh"
 
       - name: Checkout the current code
         uses: actions/checkout@v2
 
+      - name: Upload to server
+        uses: rsync --delete --delete-excluded -avz ./web mp:/melbourne-place
+
       - name: Restart the process
-        run: pm2 start web/src/server.js --name melbournePlace
+        run: ssh pi@melbourneplace.net "~/start.sh"

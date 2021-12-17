@@ -5,7 +5,8 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "kill": "screen -S melbourne-place -X quit"
+    "deploy": "pm2 start src/server.js 443 --name melbournePlace",
+    "kill": "pm2 stop melbournePlace"
   },
   "repository": {
     "type": "git",
