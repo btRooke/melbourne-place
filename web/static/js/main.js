@@ -43,11 +43,13 @@ socket.on("error", message => console.error(message));
 
 bellButton.addEventListener("pointerdown", () => {
     socket.emit("on");
+    window.navigator.vibrate(60 * 1000); // non blocking
     bellBox.setAttribute("class", "sectionBox bell active");
 });
 
 function bellOff() {
     socket.emit("off");
+    window.navigator.vibrate(0);
     bellBox.setAttribute("class", "sectionBox bell");
 }
 
