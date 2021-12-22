@@ -1,0 +1,35 @@
+Script := Statement+
+
+Statement := while ( Expr ) { Script }
+           | if ( Expr ) { Script } ElseClause?
+           | for ( ID Range ) { Script }
+           | wait Expr
+           | save
+           | pass
+           | ID ASSIGN Expr
+
+Expr := NUM
+      | random Range
+      | TRUE
+      | FALSE
+      | ID
+      | NOT Expr
+      | ( Expr )
+      | Expr Op Expr
+
+ElseClause := else { Script }
+
+Range := in range ( Expr RangeList? RangeList? )
+
+RangeList := , Expr
+
+Op := INTOP | BOOLOP | COND
+
+ID := [a-zA-Z][a-zA-Z|0-9|_]+
+NUM := [0-9]+
+
+INTOP := [+-*/%]
+BOOLOP := &&|\|\|
+COND := [=!<>]=?
+
+ASSIGN := [+-*/]?=
