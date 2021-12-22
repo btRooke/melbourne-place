@@ -1,18 +1,17 @@
-import network, webrepl
+from network import WLAN, STA_IF
+from webrepl import start as webrepl_start
+from .setup_net import SSID, PASS
 
-SSID = "Matt LANcock"
-PASS = "quoththeravennevermore"
+if __name__ == "__main__":
+    webrepl_start()
+    sta_if = WLAN(STA_IF)
 
-webrepl.start()
+    if not sta_if.isconnected():
+        print("Connecting to network")
+        sta_if.active(True)
+        sta_if.connect(SSID, PASS)
+        
+        while not sta_if.isconnected():
+            pass
 
-sta_if = network.WLAN(network.STA_IF)
-
-if not sta_if.isconnected():
-    print("Connecting to network")
-    sta_if.active(True)
-    sta_if.connect(SSID, PASS)
-    
-    while not sta_if.isconnected():
-        pass
-
-print("Connected to network:", sta_if.ifconfig())
+    print("Connected to network:", sta_if.ifconfig())
