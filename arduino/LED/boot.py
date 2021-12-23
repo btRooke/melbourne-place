@@ -1,6 +1,6 @@
 from network import WLAN, STA_IF
 from webrepl import start as webrepl_start
-from .setup_net import SSID, PASS
+from setup_net import SSID, PASS
 
 if __name__ == "__main__":
     webrepl_start()
