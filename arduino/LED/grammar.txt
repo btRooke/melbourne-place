@@ -1,21 +1,22 @@
 Script := Statement+
 
-Statement := while ( Expr ) { Script }
-           | if ( Expr ) { Script } ElseClause?
-           | for ( ID Range ) { Script }
+Statement := ID ASSIGN Expr
            | wait Expr
            | save
            | pass
-           | ID ASSIGN Expr
+           | while ( Expr ) { Script }
+           | if ( Expr ) { Script } ElseClause?
+           | for ( ID Range ) { Script }
 
-Expr := NUM
-      | random Range
-      | TRUE
-      | FALSE
-      | ID
-      | NOT Expr
+Expr := NUM ExprExt?
+      | ID ExprExt?
+      | random Range ExprExt?
+      | TRUE ExprExt?
+      | FALSE ExprExt?
+      | NOT Expr ExprExt?
       | ( Expr )
-      | Expr Op Expr
+
+ExprExt := Op Expr      
 
 ElseClause := else { Script }
 
@@ -25,11 +26,11 @@ RangeList := , Expr
 
 Op := INTOP | BOOLOP | COND
 
-ID := [a-zA-Z][a-zA-Z|0-9|_]+
+ID := [a-zA-Z][a-zA-Z|0-9|_]*
 NUM := [0-9]+
 
-INTOP := [+-*/%]
+INTOP := [+\-\*/%]
 BOOLOP := &&|\|\|
 COND := [=!<>]=?
 
-ASSIGN := [+-*/]?=
+ASSIGN := [+\-\*/]?=
