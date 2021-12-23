@@ -3,11 +3,9 @@ g = 20
 b = 0
 save
 
-while 1
-
+while (true) {
     r = random 230 255
     g = random 30 50
-
     save
-
     wait 50
+}
