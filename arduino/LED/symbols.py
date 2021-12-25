@@ -3,6 +3,9 @@
 from re import match
 from symbol import Symbol
 
+class PING(Symbol):
+    pattern = lambda token: token == "ping"
+
 class LBRACKET(Symbol):
     pattern = lambda token: token == "("
 
@@ -21,6 +24,8 @@ class COMMA(Symbol):
 class ID(Symbol):
     pattern = lambda token: (
         match(r"^[a-zA-Z][a-zA-Z|0-9|_]*$", token) is not None and
+        # Prevent conflicting matches with keywords 
+        not PING.match(token) and
         not TRUE.match(token) and
         not FALSE.match(token) and 
         not WAIT.match(token) and

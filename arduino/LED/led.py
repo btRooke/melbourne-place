@@ -22,7 +22,7 @@ def cie1931(L: float) -> float:
 lookup = [round(cie1931(float(L) / 255) * 1023) for L in range(256)]
 
 # Random number generator function
-def rng(values: type(range)) -> int:   
+def rng(values) -> int:   
     # Calculate the number of bits needed to represent each index in values
     size = len(values)
     bits = ceil(log2(size))

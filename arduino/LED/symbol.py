@@ -5,7 +5,6 @@ class Symbol:
 
     @classmethod
     def match(cls, token: str) -> bool:
-        #print("Entering", cls.__name__, ":", token, "-", cls.pattern(token))
         return cls.pattern(token)
 
 class Lexeme:

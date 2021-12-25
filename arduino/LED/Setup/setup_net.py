@@ -1,6 +1,7 @@
 """
-# Defines network credentials and host port
+# Defines network credentials and device settings
 SSID =
 PASS = 
+NAME =
 PORT =
 """

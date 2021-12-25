@@ -46,17 +46,13 @@ class Production:
 
     @classmethod
     def match(cls, tokens: list, index: int) -> tuple:
-        print("Matching", cls.__name__, tokens[index])
-
         for rule in cls.rules:
             result, tokens, index = cls.match_rule(rule, tokens, index)
 
             # Return the first matching rule in a dict containing the name of the production
             if result is not None:
-                print("Matched", cls.__name__, result)
                 return result, tokens, index
 
-        print("Failed to match", cls.__name__)
         return None, tokens, index
 
 

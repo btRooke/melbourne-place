@@ -4,9 +4,13 @@ from production import Production
 from symbols import (
     ASSIGN, BOOLOP, COMMA, COND, ELSE, FALSE, FOR, 
     ID, IF, IN, INTOP, LBRACE, LBRACKET, NOT, NUM, 
-    PASS, RANDOM, RANGE, RBRACE, RBRACKET, SAVE, TRUE, WAIT, WHILE)
-    
+    PASS, PING, RANDOM, RANGE, RBRACE, RBRACKET, 
+    SAVE, TRUE, WAIT, WHILE)
+
 class Script(Production):
+    pass
+
+class Block(Production):
     pass
     
 class Statement(Production):
@@ -32,6 +36,12 @@ class Op(Production):
 
 
 Script.create_rules([
+    [PING],
+    [Block]
+])
+
+
+Block.create_rules([
     [(Statement, "+")]
 ])
 
@@ -41,9 +51,9 @@ Statement.create_rules([
     [WAIT, Expr],
     [SAVE],
     [PASS],
-    [WHILE, LBRACKET, Expr, RBRACKET, LBRACE, Script, RBRACE],
-    [IF, LBRACKET, Expr, RBRACKET, LBRACE, Script, RBRACE, (ElseClause, "?")],
-    [FOR, LBRACKET, ID, Range, RBRACKET, LBRACE, Script, RBRACE]    
+    [WHILE, LBRACKET, Expr, RBRACKET, LBRACE, Block, RBRACE],
+    [IF, LBRACKET, Expr, RBRACKET, LBRACE, Block, RBRACE, (ElseClause, "?")],
+    [FOR, LBRACKET, ID, Range, RBRACKET, LBRACE, Block, RBRACE]    
 ])
 
 
@@ -64,7 +74,7 @@ ExprExt.create_rules([
 
 
 ElseClause.create_rules([
-    [ELSE, LBRACE, Script, RBRACE]
+    [ELSE, LBRACE, Block, RBRACE]
 ])
 
 

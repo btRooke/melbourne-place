@@ -1,9 +1,6 @@
-# Local imports
 from led import led, lookup, rng
 from parser import generate_tokens, parse
-from setup_net import PORT
-
-# Library imports
+from setup_net import NAME, PORT
 from uasyncio import get_event_loop, start_server, current_task, CancelledError
 
 # Main routine
@@ -14,7 +11,7 @@ async def main(task, reader, writer):
 
         asbytes = await reader.read(2048)
         data = asbytes.decode("utf-8")
-        
+
         print("Received script:")
         print(data)
 
@@ -24,6 +21,12 @@ async def main(task, reader, writer):
         try:
             tokens = generate_tokens(data)
             script = parse(tokens)
+
+            # Check for API ping
+            if len(script) == 0:
+                ping_response(task, writer)
+                return
+
             print("Script translated to:")
             print(script)
 
@@ -49,11 +52,25 @@ async def main(task, reader, writer):
         writer.close()
 
 
+# Respond to a ping request from the site
+# The program will write the device name, whether the colour is currently static, the current colour
+def ping_response(vars, task, writer):
+    writer.write("{{\n\t\"name\": {0},\n\t\"static\": {1},\n\t\"colour\": [{2},{3},{4}]\n}}".format(
+        NAME,
+        str(task is None).lower(),
+        lookup[vars["r"]],
+        lookup[vars["g"]],
+        lookup[vars["b"]]
+    ))
+
+    writer.drain()
+
+
 # Asynchronously execute a string as a function
-async def exec_async(func: str, led: list, lookup: list):
+async def exec_async(func: str, vars: dict, led: list, lookup: list):
     print("Executing")
     exec(func)
-    await locals()['__script']({ "r" : 0, "g" : 0, "b" : 0 }, led, lookup, rng)
+    await locals()['__script'](vars, led, lookup, rng)
 
 
 # Set LEDs to red and print error message on failure
@@ -68,9 +85,13 @@ async def fail(msg: str):
 # On executing, start a TCP socket
 if __name__ == "__main__":
     task = None
-
+    vars = { "r" : 0, "g" : 0, "b" : 0 }
+    
     loop = get_event_loop()
-    loop.create_task(start_server(lambda reader, writer: main(task, reader, writer), "0.0.0.0", PORT, backlog=1))
+    loop.create_task(
+        start_server(lambda reader, writer: main(task, vars, reader, writer), "0.0.0.0", PORT, backlog=1)
+    )
+
     print("Listening on port", PORT)
     loop.run_forever()
     loop.close()

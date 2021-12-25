@@ -1,12 +1,14 @@
-Script := Statement+
+Script := PING | Block
+
+Block := Statement+
 
 Statement := ID ASSIGN Expr
            | wait Expr
            | save
            | pass
-           | while ( Expr ) { Script }
-           | if ( Expr ) { Script } ElseClause?
-           | for ( ID Range ) { Script }
+           | while ( Expr ) { Block }
+           | if ( Expr ) { Block } ElseClause?
+           | for ( ID Range ) { Block }
 
 Expr := NUM ExprExt?
       | ID ExprExt?
@@ -18,7 +20,7 @@ Expr := NUM ExprExt?
 
 ExprExt := Op Expr      
 
-ElseClause := else { Script }
+ElseClause := else { Block }
 
 Range := in range ( Expr RangeList? RangeList? )
 
