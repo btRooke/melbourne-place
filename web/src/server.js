@@ -36,6 +36,8 @@ app.use(express.json());
 
 app.post("/doorbell/morse", doorbell.morseHandler);
 
+app.post("/lights/ping", lights.pingHandler);
+
 app.post("/lights/static", lights.lightHandler);
 
 app.post("/lights/preset", lights.lightHandler);
