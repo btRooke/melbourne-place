@@ -3,12 +3,12 @@ from symbols import WHILE, IF, FOR, WAIT, SAVE, PASS, PING, ASSIGN, ID, NUM, RAN
 from productions import Script, Block, Statement, Expr, ExprExt, ElseClause, Range, RangeList, Op
 
 def generate_tokens(text: str) -> list:
-    # Ensure special characters have leading and trailing spaces
-    text = sub(r"\(", " ( ", text)
-    text = sub(r"\)", " ) ", text)
-    text = sub(r"{", " { ", text)
-    text = sub(r"}", " } ", text)
-    text = sub(r"!", " ! ", text)
+    # Ensure operators and other special characters have leading and trailing spaces
+    text = sub(COND.regex, r" \\0 ", text)
+    text = sub(ASSIGN.regex, r" \\0 ", text)
+    text = sub(INTOP.regex, r" \\0 ", text)
+    text = sub(BOOLOP.regex, r" \\0 ", text)
+    text = sub(r"[\(\){}!,]", r" \\0 ", text)
 
     # Split on any whitespace
     return split(r"\s+", text)

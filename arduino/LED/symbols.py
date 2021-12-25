@@ -3,27 +3,91 @@
 from re import match
 from symbol import Symbol
 
-class PING(Symbol):
-    pattern = lambda token: token == "ping"
+class LiteralSymbol(Symbol):
+    literal = ""
+    literal = literal
 
-class LBRACKET(Symbol):
-    pattern = lambda token: token == "("
+class RegexSymbol(Symbol):
+    regex = ""
+    pattern = lambda token: match(regex, token) is not None
 
-class RBRACKET(Symbol):
-    pattern = lambda token: token == ")"
 
-class LBRACE(Symbol):
-    pattern = lambda token: token == "{"
+class PING(LiteralSymbol):
+    literal = "ping"
 
-class RBRACE(Symbol):
-    pattern = lambda token: token == "}"
+class LBRACKET(LiteralSymbol):
+    literal = "("
 
-class COMMA(Symbol):
-    pattern = lambda token: token == ","
+class RBRACKET(LiteralSymbol):
+    literal = ")"
 
-class ID(Symbol):
+class LBRACE(LiteralSymbol):
+    literal = "{"
+
+class RBRACE(LiteralSymbol):
+    literal = "}"
+
+class COMMA(LiteralSymbol):
+    literal = ","
+
+class NOT(LiteralSymbol):
+    literal = "!"
+
+class TRUE(LiteralSymbol):
+    literal = "true"
+
+class FALSE(LiteralSymbol):
+    literal = "false"
+
+class WAIT(LiteralSymbol):
+    literal = "wait"
+
+class SAVE(LiteralSymbol):
+    literal = "save"
+
+class PASS(LiteralSymbol):
+    literal = "pass"
+
+class WHILE(LiteralSymbol):
+    literal = "while"
+
+class IF(LiteralSymbol):
+    literal = "if"
+
+class ELSE(LiteralSymbol):
+    literal = "else"
+
+class FOR(LiteralSymbol):
+    literal = "for"
+
+class IN(LiteralSymbol):
+    literal = "in"
+
+class RANGE(LiteralSymbol):
+    literal = "range"
+
+class RANDOM(LiteralSymbol):
+    literal = "random"
+
+class NUM(RegexSymbol):
+    regex = r"^[0-9]+$"
+
+class INTOP(RegexSymbol):
+    regex = r"^[+\-\*/%]$"
+
+class BOOLOP(RegexSymbol):
+    regex = r"^&&|\|\|$"
+
+class COND(RegexSymbol):
+    regex = r"^[=!<>]=?$"
+
+class ASSIGN(RegexSymbol):
+    regex = r"^[+\-\*/]?=$"
+
+class ID(RegexSymbol):
+    regex = r"^[a-zA-Z][a-zA-Z|0-9|_]*$"
     pattern = lambda token: (
-        match(r"^[a-zA-Z][a-zA-Z|0-9|_]*$", token) is not None and
+        match(regex, token) is not None and
         # Prevent conflicting matches with keywords 
         not PING.match(token) and
         not TRUE.match(token) and
@@ -38,57 +102,3 @@ class ID(Symbol):
         not IN.match(token) and
         not RANGE.match(token) and
         not RANDOM.match(token))
-
-class NUM(Symbol):
-    pattern = lambda token: match(r"^[0-9]+$", token) is not None
-
-class INTOP(Symbol):
-    pattern = lambda token: match(r"^[+\-\*/%]$", token) is not None
-
-class BOOLOP(Symbol):
-    pattern = lambda token: match(r"^&&|\|\|$", token) is not None
-
-class COND(Symbol):
-    pattern = lambda token: match(r"^[=!<>]=?$", token) is not None
-
-class ASSIGN(Symbol):
-    pattern = lambda token: match(r"^[+\-\*/]?=$", token) is not None
-
-class NOT(Symbol):
-    pattern = lambda token: token == "!"
-
-class TRUE(Symbol):
-    pattern = lambda token: token == "true"
-
-class FALSE(Symbol):
-    pattern = lambda token: token == "false"
-
-class WAIT(Symbol):
-    pattern = lambda token: token == "wait"
-
-class SAVE(Symbol):
-    pattern = lambda token: token == "save"
-
-class PASS(Symbol):
-    pattern = lambda token: token == "pass"
-
-class WHILE(Symbol):
-    pattern = lambda token: token == "while"
-
-class IF(Symbol):
-    pattern = lambda token: token == "if"
-
-class ELSE(Symbol):
-    pattern = lambda token: token == "else"
-
-class FOR(Symbol):
-    pattern = lambda token: token == "for"
-
-class IN(Symbol):
-    pattern = lambda token: token == "in"
-
-class RANGE(Symbol):
-    pattern = lambda token: token == "range"
-
-class RANDOM(Symbol):
-    pattern = lambda token: token == "random"
