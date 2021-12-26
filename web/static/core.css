@@ -153,15 +153,6 @@ ul {
     animation: preset 2s linear infinite;
 }
 
-.sectionBox.cover {
-    z-index: 10;
-    position: relative;
-    top: 0;
-    left: 0;
-    background-color: rgba(255, 255, 255, 0.50);
-    text-align: center;
-}
-
 .picker {
     margin: 8px;
 }

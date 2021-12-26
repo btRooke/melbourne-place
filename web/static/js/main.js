@@ -70,7 +70,7 @@ morseButton.addEventListener("click", () => {
 // Light presets
 
 let box = document.querySelector(".sectionBox.lights");
-let cover = document.querySelector(".sectionBox.lights.cover");
+let msg = box.querySelector("p");
 let presetList = document.querySelector("#preset");
 
 if (!box) {
@@ -80,7 +80,7 @@ if (!presetList) {
     console.warn("Cannot find light preset list to populate");
 }
 
-if (!box) {
+if (box) {
     fetch("lights/ping").then(res => {
         if (res.ok) {
             res.json().then(details => {
@@ -98,8 +98,8 @@ if (!box) {
         } else {
             box.disabled = true;
 
-            if (cover) {
-                cover.style.visible = true;
+            if (msg) {
+                msg.innerText = "Can't connect to the lights - they're probably switched off.";
             }
         }
     })
@@ -121,7 +121,7 @@ if (presetList) {
             })
         }
         else {
-            console.warn("Failed to request light preset file list!");
+            console.warn("Failed to request light preset file list.");
         }
     })
 
