@@ -99,7 +99,9 @@ if (box) {
             box.disabled = true;
 
             if (msg) {
-                msg.innerText = "Can't connect to the lights - they're probably switched off.";
+                msg.innerText = 
+                    "Can't connect to the lights - try refreshing the page.\n\n" +
+                    "If that doesn't work, they're probably switched off.";
             }
         }
     })
