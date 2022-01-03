@@ -1,146 +1,96 @@
-from re import sub, split
-from symbols import WHILE, IF, FOR, WAIT, SAVE, PASS, PING, ASSIGN, ID, NUM, RANDOM, TRUE, FALSE, NOT, LBRACKET, INTOP, BOOLOP, COND
-from productions import Script, Block, Statement, Expr, ExprExt, ElseClause, Range, RangeList, Op
+from re import compile, sub
+from symbols import IF, ELIF, ELSE, FOR, WAIT, SAVE, ASSIGN, ID, INTOP, BOOLOP, COND, COLON
+from productions import Statement
 
-def generate_tokens(text: str) -> list:
+patterns = [COND.literal, ASSIGN.literal, INTOP.literal, BOOLOP.literal, r"[\(\):,]"]
+leading = compile("(\w)({0})".format("|".join(patterns)))
+trailing = compile("({0})(\w)".format("|".join(patterns)))
+whitespace = compile(r"\s+")
+
+
+def parse(text: str) -> list:
+    # Replace groups of 4 spaces with tabs
+    text = sub("    ", '\t', text)
+
     # Ensure operators and other special characters have leading and trailing spaces
-    text = sub(COND.regex, r" \\0 ", text)
-    text = sub(ASSIGN.regex, r" \\0 ", text)
-    text = sub(INTOP.regex, r" \\0 ", text)
-    text = sub(BOOLOP.regex, r" \\0 ", text)
-    text = sub(r"[\(\){}!,]", r" \\0 ", text)
+    text = leading.sub(r"\1 \2", text)
+    text = trailing.sub(r"\1 \2", text)
 
-    # Split on any whitespace
-    return split(r"\s+", text)
+    # Split by line and discard empty lines - each line should represent a complete statement
+    lines = (line for line in text.split('\n') if len(line) > 0)
+    script = "async def __script(vars, led, lookup, rng):\n"
 
+    # Track previous state
+    prev_indent = 0
 
-def parse(tokens: list) -> str:
-    result, tokens, _ = Script().match(tokens, 0)
+    # Begin parsing
+    for line in lines:
+        # Count leading tabs
+        stripped = line.lstrip('\t')
+        indent = len(line) - len(stripped)
+        tabs = '\t' * (indent + 1)
 
-    if result is None:
-        raise RuntimeError("Failed to parse script")
+        # Check for incorrect indentation from previous line
+        if (indent > prev_indent and not indent_increase) or (indent < prev_indent and indent_increase):
+            raise RuntimeError("Invalid indentation")
 
-    script = enter_block(result)
+        # Parse the line as a statement
+        tokens = whitespace.split(stripped)
+        result = Statement.match(tokens, 0)
 
-    if len(script) > 0:
-        script = "async def __script(vars, led, lookup, rng):\n" + script
+        if result is None:
+            raise RuntimeError("Failed to parse script: error with line '{0}'".format(stripped))
+
+        # Check for illegal usage of elif/else
+        if (tokens[0] == ELIF or tokens[0] == ELSE) and not allow_else:
+            raise RuntimeError("Cannot match conditional branch to an 'if' token")
+
+        # Set flags
+        allow_else = tokens[0] == IF
+        for_loop = tokens[0] == FOR
+        indent_increase = tokens[-1] == COLON
+        extra = ""
+
+        parsed = []
+        for token in tokens:
+            # Skip processing for the first ID in a for loop
+            if for_loop and isinstance(token, ID):
+                for_loop = False
+                parsed.append(token.value + " ")
+                extra = "{0}\tvars[\"{1}\"] = {2}".format(tabs, token.value, token.value)
+            
+            else:
+                parsed.append(process_token(token, tabs))
+
+        script = "".join([script, tabs, "".join(parsed), '\n', extra])
+        prev_indent = indent
 
     return script
 
 
-def enter_script(result: dict) -> str:
-    # Pings are denoted by an empty string
-    if PING in result:
-        return ""
+def process_token(token, tabs) -> str:
+    print(token)
+    # Handle special cases where the token match can't be directly substituted
+    if isinstance(token, ID):
+        return "vars[\"{0}\"] ".format(token.value)
 
-    if Block in result:
-        return enter_block(result[Block][0])
+    elif token == WAIT:
+        return "await uasyncio.sleep_ms "
 
+    elif token == SAVE:
+        return tabs.join(["led[0].duty(lookup[vars[\"r\"]])\n", "led[1].duty(lookup[vars[\"g\"]])\n", "led[2].duty(lookup[vars[\"b\"]])"])
 
-def enter_block(result: dict) -> str:
-    block = ""
-
-    for s in result[Statement]:
-        statement = enter_statement(s)
-        statement = statement.replace("\n", "\n\t")
-
-        block += "\t" + statement + "\n"
-
-    return block
-
-
-def enter_statement(result: dict) -> str:
-    statement = ""
-
-    if WHILE in result:
-        statement += "while " + enter_expr(result[Expr][0]) + ":\n"
-
-    if IF in result:
-        statement += "if " + enter_expr(result[Expr][0]) + ":\n"
-
-    if FOR in result:
-        statement += "for " + enter_expr(result[Expr][0]) + " in " + enter_range(result[Range][0]) + ":\n"
-
-    if Block in result:
-        statement += enter_block(result[Block][0])
-
-        if ElseClause in result:
-            statement += enter_elseclause(result[ElseClause][0])
-
-    elif ASSIGN in result:
-        statement += "vars[" + result[ID][0] + "] " + result[ASSIGN][0] + " " + enter_expr(result[Expr][0])
-
-    elif WAIT in result:
-        statement += "await uasyncio.sleep_ms(" + enter_expr(result[Expr][0]) + ")"
-
-    elif SAVE in result:
-        statement += "led[0].duty(lookup[vars[r]])\n"
-        statement += "led[1].duty(lookup[vars[g]])\n"
-        statement += "led[2].duty(lookup[vars[b]])"
-
-    elif PASS in result:
-        statement += "pass"
-
-    return statement
-
+    # For all other literals, return the token that matched it
+    elif isinstance(token, str):
+        return token + " "
     
-def enter_expr(result: dict) -> str:
-    expr = ""
-    
-    if ID in result:
-        expr = result[ID][0]
+    else:
+        return token.value + " "
 
-    if NUM in result:
-        expr = result[NUM][0]
+if __name__ == "__main__":
+    spectrum = ""
+    with open("../../web/light-scripts/spectrum.txt") as f:
+        spectrum = f.read()
 
-    elif RANDOM in result:
-        expr = "rng(" + enter_range(result[Range][0]) + ")"
-
-    elif TRUE in result:
-        expr = result[TRUE][0]
-
-    elif FALSE in result:
-        expr = result[FALSE][0]
-
-    elif NOT in result:
-        expr = "not " + enter_expr(result[Expr][0])
-
-    elif LBRACKET in result:
-        expr = "(" + enter_expr(result[Expr][0]) + ")"
-
-    if ExprExt in result:
-        expr += enter_exprext(result[ExprExt][0])
-
-    return expr
-
-
-def enter_exprext(result: dict) -> str:
-    return " " + enter_op(result[Op][0]) + " " + enter_expr(result[Expr][0])
-
-
-def enter_elseclause(result: dict) -> str:
-    return "else:\n" + enter_block(result[Block][0])
-
-
-def enter_range(result: dict) -> str:
-    text = "range(" + enter_expr(result[Expr][0])
-
-    for rangelist in result[RangeList]:
-        text += enter_rangelist(rangelist)
-
-    return text + ")"
-
-
-def enter_rangelist(result: dict) -> str:
-    return ", " + enter_expr(result[Expr][0])
-
-
-def enter_op(result: dict) -> str:
-    if INTOP in result:
-        return result[INTOP][0]
-
-    elif BOOLOP in result:
-        return result[BOOLOP][0]
-
-    elif COND in result:
-        return result[COND][0]
+    parsed = parse(spectrum)
+    print(parsed)

@@ -1,22 +1,21 @@
-while (true) {    
+while True:  
 	r = 255
 	g = 0
 	b = 0
 	
 	save
-	wait 30
+	wait(30)
 
 	r = 0
 	g = 255
 	b = 0
 	
 	save
-	wait 30
+	wait(30)
 
 	r = 0
 	g = 0
 	b = 255
 	
 	save
-	wait 30
-}
+	wait(30)

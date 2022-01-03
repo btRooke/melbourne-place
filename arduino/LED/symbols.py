@@ -1,104 +1,83 @@
 # The symbols in the light language grammar
 
-from re import match
+from re import compile
 from symbol import Symbol
 
-class LiteralSymbol(Symbol):
-    literal = ""
-    literal = literal
+# Literal keywords
 
-class RegexSymbol(Symbol):
-    regex = ""
-    pattern = lambda token: match(regex, token) is not None
+COLON = ":"
+COMMA = ","
+ELIF = "elif"
+ELSE = "else"
+FALSE = "False"
+FOR = "for"
+IF = "if"
+IN = "in"
+LBRACKET = "("
+NOT = "not"
+RBRACKET = ")"
+RANDOM = "random"
+RANGE = "range"
+SAVE = "save"
+TRUE = "True"
+WAIT = "wait"
+WHILE = "while"
 
+# Modifiers
 
-class PING(LiteralSymbol):
-    literal = "ping"
+MAYBE = "?"
+ANY = "*"
+MANY = "+"
 
-class LBRACKET(LiteralSymbol):
-    literal = "("
+# Regex literals
 
-class RBRACKET(LiteralSymbol):
-    literal = ")"
+def wholetext(s: str) -> str:
+    return "^" + s + "$"
 
-class LBRACE(LiteralSymbol):
-    literal = "{"
+class NUM(Symbol):
+    __slots__ = ()
+    literal = "[0-9]+"
+    regex = compile(wholetext(literal))
 
-class RBRACE(LiteralSymbol):
-    literal = "}"
+class INTOP(Symbol):
+    __slots__ = ()
+    literal = "[\+\-\*/%]"
+    regex = compile(wholetext(literal))
 
-class COMMA(LiteralSymbol):
-    literal = ","
+class BOOLOP(Symbol):
+    __slots__ = ()
+    literal = "&&|\|\|"
+    regex = compile(wholetext(literal))
 
-class NOT(LiteralSymbol):
-    literal = "!"
+class COND(Symbol):
+    __slots__ = ()
+    literal = "[=!<>]=?"
+    regex = compile(wholetext(literal))
 
-class TRUE(LiteralSymbol):
-    literal = "true"
+class ASSIGN(Symbol):
+    __slots__ = ()
+    literal = "[\+\-\*/]?="
+    regex = compile(wholetext(literal))
 
-class FALSE(LiteralSymbol):
-    literal = "false"
-
-class WAIT(LiteralSymbol):
-    literal = "wait"
-
-class SAVE(LiteralSymbol):
-    literal = "save"
-
-class PASS(LiteralSymbol):
-    literal = "pass"
-
-class WHILE(LiteralSymbol):
-    literal = "while"
-
-class IF(LiteralSymbol):
-    literal = "if"
-
-class ELSE(LiteralSymbol):
-    literal = "else"
-
-class FOR(LiteralSymbol):
-    literal = "for"
-
-class IN(LiteralSymbol):
-    literal = "in"
-
-class RANGE(LiteralSymbol):
-    literal = "range"
-
-class RANDOM(LiteralSymbol):
-    literal = "random"
-
-class NUM(RegexSymbol):
-    regex = r"^[0-9]+$"
-
-class INTOP(RegexSymbol):
-    regex = r"^[+\-\*/%]$"
-
-class BOOLOP(RegexSymbol):
-    regex = r"^&&|\|\|$"
-
-class COND(RegexSymbol):
-    regex = r"^[=!<>]=?$"
-
-class ASSIGN(RegexSymbol):
-    regex = r"^[+\-\*/]?=$"
-
-class ID(RegexSymbol):
-    regex = r"^[a-zA-Z][a-zA-Z|0-9|_]*$"
-    pattern = lambda token: (
-        match(regex, token) is not None and
-        # Prevent conflicting matches with keywords 
-        not PING.match(token) and
-        not TRUE.match(token) and
-        not FALSE.match(token) and 
-        not WAIT.match(token) and
-        not SAVE.match(token) and
-        not PASS.match(token) and
-        not WHILE.match(token) and
-        not IF.match(token) and
-        not ELSE.match(token) and
-        not FOR.match(token) and
-        not IN.match(token) and
-        not RANGE.match(token) and
-        not RANDOM.match(token))
+class ID(Symbol):
+    __slots__ = ()
+    literal = "[a-zA-Z][a-zA-Z0-9_]*"
+    regex = compile(wholetext(literal))
+    
+    @classmethod
+    def match(cls, token):
+        return (
+            cls.regex.match(token) is not None and
+            # Prevent conflicting matches with keywords 
+            not token == TRUE and
+            not token == FALSE and 
+            not token == WAIT and
+            not token == SAVE and
+            not token == WHILE and
+            not token == IF and
+            not token == ELSE and
+            not token == FOR and
+            not token == IN and
+            not token == RANGE and
+            not token == RANDOM 
+        )

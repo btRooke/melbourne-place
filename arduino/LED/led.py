@@ -1,6 +1,6 @@
 # Get pins responsible for each colour and set up PWM
 from machine import Pin, PWM
-from math import ceil, log2
+from math import ceil, log
 from random import getrandbits
 from setup_led import R_PIN, G_PIN, B_PIN
 
@@ -22,10 +22,10 @@ def cie1931(L: float) -> float:
 lookup = [round(cie1931(float(L) / 255) * 1023) for L in range(256)]
 
 # Random number generator function
-def rng(values) -> int:   
+def random(values) -> int:   
     # Calculate the number of bits needed to represent each index in values
     size = len(values)
-    bits = ceil(log2(size))
+    bits = ceil(log(size) / log(2))
 
     # Generate a random value with that many bits, accounting for out-of-range errors
     # In the worst case scenario, len(values) = (2^n) + 1 so 2^(n+1) - 1 values are out of range

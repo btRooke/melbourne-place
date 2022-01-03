@@ -1,34 +1,29 @@
-Script := PING | Block
-
-Block := Statement+
-
 Statement := ID ASSIGN Expr
-           | wait Expr
+           | wait ( Expr )
            | save
-           | pass
-           | while ( Expr ) { Block }
-           | if ( Expr ) { Block } ElseClause?
-           | for ( ID Range ) { Block }
+           | while Expr :
+           | if Expr :
+           | elif Expr :
+           | else Expr :
+           | for ID in Range :
 
 Expr := NUM ExprExt?
       | ID ExprExt?
-      | random Range ExprExt?
       | TRUE ExprExt?
       | FALSE ExprExt?
       | NOT Expr ExprExt?
+      | random ( Range )
       | ( Expr )
 
-ExprExt := Op Expr      
+ExprExt := INTOP Expr
+         | BOOLOP Expr
+         | COND Expr
 
-ElseClause := else { Block }
-
-Range := in range ( Expr RangeList? RangeList? )
+Range := range ( Expr RangeList? RangeList? )
 
 RangeList := , Expr
 
-Op := INTOP | BOOLOP | COND
-
-ID := [a-zA-Z][a-zA-Z|0-9|_]*
+ID := [a-zA-Z][a-zA-Z0-9_]*
 NUM := [0-9]+
 
 INTOP := [+\-\*/%]

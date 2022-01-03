@@ -3,40 +3,33 @@ g = 0
 b = 0
 save
 
-while (true) {
-    while (g < 255) {
+while True:
+    while g < 255:
         g += 1
-        wait 10
+        wait(10)
         save
-    }
 
-    while (r > 0) {
+    while r > 0:
         r -= 1
-        wait 10
+        wait(10)
         save
-    }
 
-    while (b < 255) {
+    while b < 255:
         b += 1
-        wait 10
+        wait(10)
         save
-    }
 
-    while (g > 0) {
+    while g > 0:
         g -= 1
-        wait 10
+        wait(10)
         save
-    }
 
-    while (r < 255) {
+    while r < 255:
         r += 1
-        wait 10
+        wait(10)
         save
-    }
 
-    while (b > 0) {
+    while b > 0:
         b -= 1
-        wait 10
+        wait(10)
         save
-    }
-}

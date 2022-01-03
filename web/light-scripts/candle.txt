@@ -3,10 +3,9 @@ g = 20
 b = 0
 save
 
-while (true) {
-    r = random in range(230, 255)
-    g = random in range(30, 50)
+while True:
+	r = random(range(230, 255))
+    g = random(range(30, 50))
 
     save
-    wait 50
-}
+    wait(50)

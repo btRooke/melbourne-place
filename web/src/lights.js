@@ -24,7 +24,7 @@ const pingHandler = (req, res) => {
     lights.on("data", (data) => {
         lights.destroy();
         res.json(JSON.parse(data));
-    })
+    });
 
     lights.on("error", () => {
         lights.destroy();
@@ -35,7 +35,7 @@ const pingHandler = (req, res) => {
     lights.on("timeout", () => {
         lights.destroy();
         res.status(504);
-        res.send("Connection to lights timed out - they're probably off.")
+        res.send("Connection to lights timed out - they're probably off.");
     });
 }
 
@@ -95,9 +95,9 @@ const lightHandler = (req, res) => {
     if (!script) {
         return;
     }
-    else if (script.length > 2048) {
+    else if (script.length > 1024) {
         res.status(400);
-        res.send("File is too large to process - cannot be larger than 2048 bytes");
+        res.send("File is too large to process - cannot be larger than 1024 bytes");
         return;
     }
 
@@ -129,7 +129,7 @@ const lightHandler = (req, res) => {
     lights.on("timeout", () => {
         lights.destroy();
         res.status(500);
-        res.send("Connection to lights timed out - they're probably off.")
+        res.send("Connection to lights timed out - they're probably off.");
     });
 }
 

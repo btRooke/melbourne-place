@@ -1,9 +1,7 @@
-while (true) {    
-	r = random 0 255
-	g = random 0 255
-	b = random 0 255
+while True:    
+	r = random(range(0, 255))
+	g = random(range(0, 255))
+	b = random(range(0, 255))
 	
 	save
-	wait 30
-}
-
+	wait(30)

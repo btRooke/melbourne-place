@@ -1,9 +1,7 @@
 from network import WLAN, STA_IF
-from webrepl import start as webrepl_start
 from setup_net import SSID, PASS
 
 if __name__ == "__main__":
-    webrepl_start()
     sta_if = WLAN(STA_IF)
 
     if not sta_if.isconnected():
@@ -14,4 +12,4 @@ if __name__ == "__main__":
         while not sta_if.isconnected():
             pass
 
-    print("Connected to network:", sta_if.ifconfig())
+    print("Connected to network:", sta_if.ifconfig())       

@@ -1,61 +1,106 @@
-from led import led, lookup, rng
-from parser import generate_tokens, parse
+from led import led, lookup, random
+from parser import parse
 from setup_net import NAME, PORT
-from uasyncio import get_event_loop, start_server, current_task, CancelledError
+import uasyncio
+import gc
+import micropython
+
+parse_task = None
+exec_task = None
+
+ping = bytearray(b"ping")
+buf = bytearray(1024)
+
+vars = { "r" : 0, "g" : 0, "b" : 0 }
+
 
 # Main routine
-async def main(task, reader, writer):
+async def main(vars, reader, writer):
+    micropython.mem_info()
+    global buf, ping, exec_task
+
+    # Accept and decode request
+    print("Accepted a connection")
+
     try:
-        # Accept and decode request
-        print("Accepted a connection")
+        read = await reader.readinto(buf)
+        print("Received {0} bytes".format(read))
+        micropython.mem_info()
 
-        asbytes = await reader.read(2048)
-        data = asbytes.decode("utf-8")
-
-        print("Received script:")
-        print(data)
-
-        # Translate request into executable python
-        script = ""
-        
-        try:
-            tokens = generate_tokens(data)
-            script = parse(tokens)
-
-            # Check for API ping
-            if len(script) == 0:
-                ping_response(task, writer)
-                return
-
-            print("Script translated to:")
-            print(script)
-
-        except Exception as e:
-            fail(str(e))
+        # Check for API ping
+        if read == len(ping) and buf[:len(ping)] == ping:
+            print("Responding to ping")
+            await ping_response(exec_task, vars, writer)
             return
 
-        # Run the code in a task, cancelling the previous task
-        if task is not None:
-            task.cancel()
+        func = await parse_buf(read)
+        await exec_func(func)
 
-        task = current_task()
-        await exec_async(script, led, lookup)
-        task = None
+    # Catch this task getting cancelled by the next request
+    except uasyncio.CancelledError:
+        print("Task cancelled by a new connection")
 
-    # Catch task getting cancelled by the next request
-    except CancelledError:
-        print("Cancelling current task")
+    # Catch any other error
+    except Exception as e:
+        fail(str(e))
 
     # Close streams on completion
     finally:
         reader.close()
         writer.close()
 
+        # Cleanup on exit
+        gc.collect()
+        gc.threshold(gc.mem_free() // 4 + gc.mem_alloc())
+        micropython.mem_info()
+
+
+# Parse the given buffer, cancelling any ongoing parsing task
+async def parse_buf(read: int):
+    global buf, parse_task
+
+    if parse_task is not None:
+        print("Cancelling current parse task")
+        parse_task.cancel()
+
+    parse_task = uasyncio.current_task()
+    func = parse(buf[:read].decode("ascii"))
+    parse_task = None
+
+    print("Parsed script:")
+    print(func)
+    gc.collect()
+    gc.threshold(gc.mem_free() // 4 + gc.mem_alloc())
+    micropython.mem_info()
+    return func
+
+
+# Run a parsed script, cancelling any ongoing execution task
+async def exec_func(func: str):
+    global vars, exec_task
+
+    if exec_task is not None:
+        print("Cancelling current exec task")
+        exec_task.cancel()
+
+    print("Executing new script")
+    exec_task = uasyncio.current_task()
+    exec(func)
+    await locals()['__script'](vars, led, lookup, random)
+    exec_task = None
+
+    # Remove additional vars to reclaim space
+    vars = { "r" : vars["r"], "g" : vars["g"], "b" : vars["b"] }
+    gc.collect()
+    gc.threshold(gc.mem_free() // 4 + gc.mem_alloc())
+    micropython.mem_info()
+    print("Execution finished")
+
 
 # Respond to a ping request from the site
 # The program will write the device name, whether the colour is currently static, the current colour
-def ping_response(vars, task, writer):
-    writer.write("{{\n\t\"name\": {0},\n\t\"static\": {1},\n\t\"colour\": [{2},{3},{4}]\n}}".format(
+async def ping_response(task, vars: dict, writer):
+    writer.write("{{\n\t\"name\": \"{0}\",\n\t\"static\": {1},\n\t\"colour\": [{2},{3},{4}]\n}}".format(
         NAME,
         str(task is None).lower(),
         lookup[vars["r"]],
@@ -63,19 +108,12 @@ def ping_response(vars, task, writer):
         lookup[vars["b"]]
     ))
 
-    writer.drain()
-
-
-# Asynchronously execute a string as a function
-async def exec_async(func: str, vars: dict, led: list, lookup: list):
-    print("Executing")
-    exec(func)
-    await locals()['__script'](vars, led, lookup, rng)
+    await writer.drain()
 
 
 # Set LEDs to red and print error message on failure
-async def fail(msg: str):
-    print(msg)
+def fail(err: str):
+    print(err)
 
     led[0].duty(1023)
     led[1].duty(0)
@@ -83,15 +121,12 @@ async def fail(msg: str):
 
 
 # On executing, start a TCP socket
-if __name__ == "__main__":
-    task = None
-    vars = { "r" : 0, "g" : 0, "b" : 0 }
-    
-    loop = get_event_loop()
+if __name__ == "__main__":    
+    loop = uasyncio.get_event_loop()
     loop.create_task(
-        start_server(lambda reader, writer: main(task, vars, reader, writer), "0.0.0.0", PORT, backlog=1)
+        uasyncio.start_server(lambda reader, writer: main(vars, reader, writer), "0.0.0.0", PORT, backlog=1)
     )
 
-    print("Listening on port", PORT)
+    print("Listening on port {0}".format(PORT))
     loop.run_forever()
     loop.close()

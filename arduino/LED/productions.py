@@ -2,94 +2,62 @@
 
 from production import Production
 from symbols import (
-    ASSIGN, BOOLOP, COMMA, COND, ELSE, FALSE, FOR, 
-    ID, IF, IN, INTOP, LBRACE, LBRACKET, NOT, NUM, 
-    PASS, PING, RANDOM, RANGE, RBRACE, RBRACKET, 
-    SAVE, TRUE, WAIT, WHILE)
+    ANY, ASSIGN, BOOLOP, COLON, COMMA, COND, ELIF, ELSE, 
+    FALSE, FOR, ID, IF, IN, INTOP, LBRACKET, MANY, MAYBE, 
+    NOT, NUM, RANDOM, RANGE, RBRACKET, SAVE, TRUE, WAIT, WHILE)
 
-class Script(Production):
-    pass
 
-class Block(Production):
-    pass
-    
 class Statement(Production):
-    pass
+    __slots__ = ()
 
 class Expr(Production):
-    pass
+    __slots__ = ()
 
 class ExprExt(Production):
-    pass
-
-class ElseClause(Production):
-    pass
+    __slots__ = ()
 
 class Range(Production):
-    pass
+    __slots__ = ()
 
 class RangeList(Production):
-    pass
-
-class Op(Production):
-    pass
+    __slots__ = ()
 
 
-Script.create_rules([
-    [PING],
-    [Block]
-])
+Statement.rules = (
+    (ID, ASSIGN, Expr),
+    (WAIT, LBRACKET, Expr, RBRACKET),
+    (SAVE, ),
+    (WHILE, Expr, COLON),
+    (IF, Expr, COLON),
+    (ELIF, Expr, COLON),
+    (ELSE, Expr, COLON),
+    (FOR, ID, IN, Range, COLON)
+)
 
 
-Block.create_rules([
-    [(Statement, "+")]
-])
+Expr.rules = (
+    (NUM, (ExprExt, MAYBE)),
+    (ID, (ExprExt, MAYBE)),
+    (TRUE, (ExprExt, MAYBE)),
+    (FALSE, (ExprExt, MAYBE)),
+    (NOT, Expr, (ExprExt, MAYBE)),
+    (RANDOM, LBRACKET, Range, RBRACKET),
+    (LBRACKET, Expr, RBRACKET)
+)
 
 
-Statement.create_rules([
-    [ID, ASSIGN, Expr],
-    [WAIT, Expr],
-    [SAVE],
-    [PASS],
-    [WHILE, LBRACKET, Expr, RBRACKET, LBRACE, Block, RBRACE],
-    [IF, LBRACKET, Expr, RBRACKET, LBRACE, Block, RBRACE, (ElseClause, "?")],
-    [FOR, LBRACKET, ID, Range, RBRACKET, LBRACE, Block, RBRACE]    
-])
+ExprExt.rules = (
+    (INTOP, Expr),
+    (BOOLOP, Expr),
+    (COND, Expr)
+)
 
 
-Expr.create_rules([
-    [NUM, (ExprExt, "?")],
-    [ID, (ExprExt, "?")],
-    [RANDOM, Range, (ExprExt, "?")],
-    [TRUE, (ExprExt, "?")],
-    [FALSE, (ExprExt, "?")],
-    [NOT, Expr, (ExprExt, "?")],
-    [LBRACKET, Expr, RBRACKET]
-])
+Range.rules = (
+    (RANGE, LBRACKET, Expr, (RangeList, MAYBE), (RangeList, MAYBE), RBRACKET)
+)
 
 
-ExprExt.create_rules([
-    [Op, Expr]
-])
-
-
-ElseClause.create_rules([
-    [ELSE, LBRACE, Block, RBRACE]
-])
-
-
-Range.create_rules([
-    [IN, RANGE, LBRACKET, Expr, (RangeList, "?"), (RangeList, "?"), RBRACKET]
-])
-
-
-RangeList.create_rules([
-    [COMMA, Expr]
-])
-
-
-Op.create_rules([
-    [INTOP],
-    [BOOLOP],
-    [COND]
-])
+RangeList.rules = (
+    (COMMA, Expr)
+)

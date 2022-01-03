@@ -1,95 +1,88 @@
 # Production definition
 
-from symbol import Symbol, Terminal, NonTerminal
+from symbol import match_terminal, match_nonterminal
+from symbols import ANY, MANY, MAYBE
+
+
+def allow_omission(lexeme):
+        return isinstance(lexeme, tuple) and (lexeme[1] == MAYBE or lexeme[1] == ANY)
+
+def allow_many(lexeme):
+        return isinstance(lexeme, tuple) and (lexeme[1] == MANY or lexeme[1] == ANY)
+
 
 class Production:
-    # Generate Terminal and NonTerminal lexemes from the rule arrays
-    @classmethod
-    def create_rules(cls, rules):
-        cls.rules = []
-        
-        for rule in rules:
-            # Evaluate each lexeme in the rule
-            for i in range(len(rule)):
-                lexeme = None
-                modifier = ""
+    __slots__ = ()
 
-                # Check if (symbol, modifier) are given in a tuple
-                if isinstance(rule[i], tuple):
-                    symbol = rule[i][0]
-                    modifier = rule[i][1]
-
-                    # Modified terminal
-                    if issubclass(symbol, Symbol): 
-                        lexeme = Terminal(symbol, modifier)
-
-                    # Modified non-terminal
-                    elif issubclass(symbol, Production):
-                        lexeme = NonTerminal(symbol, modifier)
-
-                # Single terminal
-                elif issubclass(rule[i], Symbol):
-                    lexeme = Terminal(rule[i])
-
-                # Single non-terminal
-                else:
-                    lexeme = NonTerminal(rule[i])
-
-                # Bad type given
-                if lexeme is None:
-                    raise RuntimeError("Invalid lexeme type: expected <class 'symbols.Symbol'> or <class 'productions.Production'>, got " + lexeme)
-
-                rule[i] = lexeme
-
-            cls.rules.append(rule)
-
+    rules = ()
 
     @classmethod
-    def match(cls, tokens: list, index: int) -> tuple:
+    def match(cls, tokens: list, index: int) -> int:
         for rule in cls.rules:
-            result, tokens, index = cls.match_rule(rule, tokens, index)
+            index_prime = cls.match_rule(rule, tokens, index)
+            
+            if index_prime is not None:
+                return index_prime
 
-            # Return the first matching rule in a dict containing the name of the production
-            if result is not None:
-                return result, tokens, index
-
-        return None, tokens, index
+        return None
 
 
-    @classmethod
-    def match_rule(cls, rule: list, tokens: list, index: int) -> tuple:
-        start_index = index
+    @staticmethod
+    def match_rule(rule: list, tokens: list, index: int) -> int:
+        # Copy the tokens to prevent mutating on a partial match
+        tokens_prime = list(tokens)
+
         i = 0
         found = False
-        captured = {}
 
         # Find the first matching lexeme
         while i < len(rule) and index < len(tokens):
             lexeme = rule[i]
-            result, tokens, index = lexeme.match(tokens, index)
+            modifier = b""
+            
+            can_omit = allow_omission(lexeme)
+            can_repeat = allow_many(lexeme)
+
+            if isinstance(lexeme, tuple):
+                lexeme = lexeme[0]
+
+            if isinstance(lexeme, str):
+                result = match_terminal(lexeme, tokens_prime, index)
+
+            else:
+                result = (
+                    match_nonterminal(lexeme, tokens_prime, index) if issubclass(lexeme, Production) else 
+                    match_terminal(lexeme, tokens_prime, index))
 
             if result is None:
-                # Skip for ?,* modifiers, 0 occurrences
-                # Skip for +,* modifiers, many occurrences, still tokens to check
-                if not lexeme.canBeOmitted and not found:
-                    return result, tokens, start_index
+                # In some cases, a non-match doesn't mean the rule fails:
+                # - ?,* modifier
+                # - +,* modifier with >= 1 occurrence already found
+                if not can_omit and not found:
+                    return None
 
-            # Add the results of matching symbols
-            # Use the symbol's type as the index for easy retrieval in the parser
             else:
-                symbol = type(lexeme.symbol) if isinstance(lexeme.symbol, Symbol) else lexeme.symbol
-
-                if symbol in captured:
-                    captured[symbol].append(result)
-                else:
-                    captured[symbol] = [result] 
+                index = result
 
             found = result is not None
 
-            # Only increment i if the next symbol definitely won't be the same
-            if (found and not lexeme.canBeMany) or (not found and (lexeme.canBeOmitted or lexeme.canBeMany)):         
+            # Only increment i if the next symbol definitely won't be the same:
+            # - the previous token failed to match
+            # - the previous token matched, and the lexeme does not have a +,* modifier
+            if not (found and can_repeat):         
                 i += 1
 
-        return captured, tokens, index
+        # Check in case end of token stream but not end of rule:
+        # - the current lexeme is the last one, has a +,* modifier, and has already been matched
+        # - the remaining lexemes all have ?,* modifiers
+        if index >= len(tokens) and i < len(rule):
+            if i == len(rule) - 1 and allow_many(rule[i]) and found:
+                tokens[:index] = tokens_prime[:index]
+                return index
 
-    
+            for lexeme in rule[i:]:
+                if not allow_omission(lexeme):
+                    return None
+
+        tokens[:index] = tokens_prime[:index]
+        return index
