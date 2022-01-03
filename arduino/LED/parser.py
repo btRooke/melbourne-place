@@ -86,11 +86,3 @@ def process_token(token, tabs) -> str:
     
     else:
         return token.value + " "
-
-if __name__ == "__main__":
-    spectrum = ""
-    with open("../../web/light-scripts/spectrum.txt") as f:
-        spectrum = f.read()
-
-    parsed = parse(spectrum)
-    print(parsed)

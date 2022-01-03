@@ -3,7 +3,6 @@ from parser import parse
 from setup_net import NAME, PORT
 import uasyncio
 import gc
-import micropython
 
 parse_task = None
 exec_task = None
@@ -16,7 +15,6 @@ vars = { "r" : 0, "g" : 0, "b" : 0 }
 
 # Main routine
 async def main(vars, reader, writer):
-    micropython.mem_info()
     global buf, ping, exec_task
 
     # Accept and decode request
@@ -25,7 +23,6 @@ async def main(vars, reader, writer):
     try:
         read = await reader.readinto(buf)
         print("Received {0} bytes".format(read))
-        micropython.mem_info()
 
         # Check for API ping
         if read == len(ping) and buf[:len(ping)] == ping:
@@ -52,7 +49,6 @@ async def main(vars, reader, writer):
         # Cleanup on exit
         gc.collect()
         gc.threshold(gc.mem_free() // 4 + gc.mem_alloc())
-        micropython.mem_info()
 
 
 # Parse the given buffer, cancelling any ongoing parsing task
@@ -67,11 +63,11 @@ async def parse_buf(read: int):
     func = parse(buf[:read].decode("ascii"))
     parse_task = None
 
-    print("Parsed script:")
-    print(func)
     gc.collect()
     gc.threshold(gc.mem_free() // 4 + gc.mem_alloc())
-    micropython.mem_info()
+
+    print("Parsed script:")
+    print(func)
     return func
 
 
@@ -85,16 +81,19 @@ async def exec_func(func: str):
 
     print("Executing new script")
     exec_task = uasyncio.current_task()
+    
     exec(func)
     await locals()['__script'](vars, led, lookup, random)
+    
     exec_task = None
+    print("Execution finished")
 
     # Remove additional vars to reclaim space
     vars = { "r" : vars["r"], "g" : vars["g"], "b" : vars["b"] }
     gc.collect()
     gc.threshold(gc.mem_free() // 4 + gc.mem_alloc())
-    micropython.mem_info()
-    print("Execution finished")
+
+    
 
 
 # Respond to a ping request from the site
