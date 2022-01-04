@@ -29,10 +29,12 @@ if [ -z ${led} ]; then
     exit 1
 fi
 
-for file in *.py; do
+cd ESP-RGB-LED
+for file in !(setup_*).py; do
     printf "Uploading ${file}\n"
     ampy --port /dev/ttyUSB0 --baud 115200 put $file
 done
+cd ..
 
 printf "Uploading ${net} as 'setup_net.py'\n"
 ampy --port /dev/ttyUSB0 --baud 115200 put $net setup_net.py
