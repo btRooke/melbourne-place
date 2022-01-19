@@ -37,7 +37,7 @@ morseButton.addEventListener("click", () => {
 
 // light stuff
 
-const lightBox = document.querySelector("sectionBox lights");
+const lightBox = document.querySelector(".sectionBox.lights");
 
 socket.on("lights", code => {
     lightBox.style.borderColor = code;
