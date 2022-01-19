@@ -39,6 +39,8 @@ const bellBox = document.querySelector("#bellBox");
 
 const socket = io();
 
+socket.on("lights", code => console.log(code));
+
 socket.on("error", message => console.error(message));
 
 bellButton.addEventListener("pointerdown", () => {
