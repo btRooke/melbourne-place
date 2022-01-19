@@ -5,7 +5,7 @@ const localSocketTimeout = 250;
 
 // Sets the lights to a static colour or preset
 // Uses req's type value to determine which
-const lightHandler = (req, res) => {
+const lightHandler = io => (req, res) => {
     let type = req.body["type"];
     let payload = req.body["payload"];
 
@@ -81,6 +81,9 @@ const lightHandler = (req, res) => {
         res.json({
             message: "Success!"
         });
+
+        io.emit("lights", payload);
+
     });
 
     lights.on("error", () => {

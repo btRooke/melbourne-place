@@ -17,6 +17,20 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+// ======== sockets IO ========
+
+io.on("connection", socket => {
+
+    doorbell.realtimeHandler(socket);
+
+    console.log(`SocketIO connection from ${socket.handshake.headers.host}: ${socket.id}`);
+
+    socket.on("disconnect", () => {
+        console.log(`SocketIO ${socket.id} disconnected!`);
+    })
+
+});
+
 // ======== expess configuration ========
 
 // cross origin requests
@@ -36,29 +50,15 @@ app.use(express.json());
 
 app.post("/doorbell/morse", doorbell.morseHandler);
 
-app.post("/lights/static", lights.lightHandler);
+app.post("/lights/static", lights.lightHandler(io));
 
-app.post("/lights/preset", lights.lightHandler);
+app.post("/lights/preset", lights.lightHandler(io));
 
 app.get("/lights/presets", lights.presetHandler);
 
 // serve static files
 
 app.use(express.static(staticDirectory));
-
-// ======== sockets IO ========
-
-io.on("connection", socket => {
-
-    doorbell.realtimeHandler(socket);
-
-    console.log(`SocketIO connection from ${socket.handshake.headers.host}: ${socket.id}`);
-
-    socket.on("disconnect", () => {
-        console.log(`SocketIO ${socket.id} disconnected!`);
-    })
-
-});
 
 // ======== 404 ========
 
