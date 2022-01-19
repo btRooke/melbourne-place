@@ -37,7 +37,7 @@ ringAnimation = () => {
 
 const bellBox = document.querySelector("#bellBox");
 
-const socket = io();
+const socket = io("https://melbourneplace.net");
 
 socket.on("error", message => console.error(message));
 
