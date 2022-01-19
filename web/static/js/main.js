@@ -1,45 +1,9 @@
-// doorbell animation
-
-const bellAnimation = bodymovin.loadAnimation({
-
-    container: document.querySelector(".bellIconContainer"),
-    path: "media/bell.json",
-    renderer: "svg",
-    autoplay: false,
-    loop: false,
-
-    rendererSettings: {
-        preserverAspectRatio: "xMinYMin",
-    }
-
-});
-
-const bellButton = document.querySelector("#bell");
-
-ringAnimation = () => {
-
-    bellButton.disabled = true;
-    document.querySelector(".overlay").setAttribute("class", "fullScreen centreContent noselect overlay");
-
-    bellAnimation.play();
-
-    setTimeout(() => {
-
-        document.querySelector(".overlay").setAttribute("class", "fullScreen centreContent noselect overlay hidden");
-        bellAnimation.stop();
-        bellButton.disabled = false;
-
-    }, 1500);
-
-}
-
 // bell stuff
 
+const bellButton = document.querySelector("#bell");
 const bellBox = document.querySelector("#bellBox");
 
 const socket = io();
-
-socket.on("lights", code => console.log(code));
 
 socket.on("error", message => console.error(message));
 
@@ -69,6 +33,15 @@ morseButton.addEventListener("click", () => {
         morseRing(morseBox.value);
     }
 
+});
+
+// light stuff
+
+const lightBox = document.querySelector("sectionBox lights");
+
+socket.on("lights", code => {
+    lightBox.style.borderColor = code;
+    console.log(`Other user set lights to ${code}`);
 });
 
 // Light presets
