@@ -1,13 +1,15 @@
 r = 255
-g = 20
+g = 0
 b = 0
 save
 
-while 1
+while True:
+	while g < 255:
+		g += 1
+		wait(10)
+		save
 
-    r = random 230 255
-    g = random 30 50
-
-    save
-
-    wait 50
+	while g > 0:
+		g -= 1
+		wait(10)
+		save

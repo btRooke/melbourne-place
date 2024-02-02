@@ -46,25 +46,63 @@ socket.on("lights", code => {
 
 // Light presets
 
+let box = document.querySelector(".sectionBox.lights");
+let msg = box.querySelector("p");
 let presetList = document.querySelector("#preset");
 
-fetch("lights/presets").then(res => {
-    if (res.ok) {
-        // Loop through each file name, adding it as an option to the preset list
-        res.json().then(filenames => {
-            let option;
+if (!box) {
+    console.warn("No light box found - cannot change border colour.");
+}
+if (!presetList) {
+    console.warn("Cannot find light preset list to populate");
+}
 
-            for (let i = 0; i < filenames.length; i++) {
-                option = document.createElement("option");
-                option.text = filenames[i].split('.').slice(0, -1).join('.');
-                option.value = filenames[i];
-                presetList.add(option);
+if (box) {
+    fetch("lights/ping").then(res => {
+        if (res.ok) {
+            res.json().then(details => {
+
+                if (details.static) {
+                    if (box.classList.contains("preset")) {
+                        box.classList.remove("preset");  
+                    }
+                    box.style.borderColor = colourCode;
+                }
+                else if (!box.classList.contains("preset")) {
+                    box.classList.add("preset");   
+                }
+            })
+        } else {
+            box.disabled = true;
+
+            if (msg) {
+                msg.innerText = 
+                    "Can't connect to the lights - try refreshing the page.\n\n" +
+                    "If that doesn't work, they're probably switched off.";
             }
-        })
-    }
-    else {
-        console.warn("Failed to request light preset file list!");
-    }
-})
+        }
+    })
+}
 
-presetList.addEventListener("change", e => setPreset(e.target.value));
+if (presetList) {
+    fetch("lights/presets").then(res => {
+        if (res.ok) {
+            // Loop through each file name, adding it as an option to the preset list
+            res.json().then(filenames => {
+                let option;
+    
+                for (let i = 0; i < filenames.length; i++) {
+                    option = document.createElement("option");
+                    option.text = filenames[i].split('.').slice(0, -1).join('.');
+                    option.value = filenames[i];
+                    presetList.add(option);
+                }
+            })
+        }
+        else {
+            console.warn("Failed to request light preset file list.");
+        }
+    })
+
+    presetList.addEventListener("change", e => setPreset(e.target.value));
+}

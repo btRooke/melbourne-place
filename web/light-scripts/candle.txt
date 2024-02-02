@@ -1,0 +1,11 @@
+r = 255
+g = 20
+b = 0
+save
+
+while True:
+	r = random(range(230, 255))
+    g = random(range(30, 50))
+
+    save
+    wait(50)

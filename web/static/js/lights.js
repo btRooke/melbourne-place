@@ -21,7 +21,6 @@ callLightAPI = (request) => {
         }
 
     });
-
 }
 
 setStaticColour = (colourCode) => {
@@ -37,7 +36,6 @@ setStaticColour = (colourCode) => {
         }
         border.style.borderColor = colourCode;
     }
-
 }
 
 setPreset = (presetName) => {
@@ -50,5 +48,4 @@ setPreset = (presetName) => {
     if (border && !border.classList.contains("preset")) {
         border.classList.add("preset");   
     }
-
 }

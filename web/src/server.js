@@ -56,6 +56,8 @@ app.post("/lights/preset", lights.lightHandler(io));
 
 app.get("/lights/presets", lights.presetHandler);
 
+app.get("/lights/ping", lights.pingHandler);
+
 // serve static files
 
 app.use(express.static(staticDirectory));

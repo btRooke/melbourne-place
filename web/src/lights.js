@@ -3,6 +3,43 @@ const net = require("net");
 const sanitize = require("sanitize-filename");
 const localSocketTimeout = 250;
 
+const HOST = "192.168.1.179"
+const PORT = 8080 
+
+// Pings the controller to determine if it is online
+const pingHandler = (req, res) => {
+    // Send a ping
+    const lights = new net.Socket();
+    lights.setTimeout(localSocketTimeout);
+
+    lights.connect({
+        host: HOST,
+        port: PORT
+    });
+
+    lights.on("connect", () => {
+        lights.write("ping");
+    });
+
+    lights.on("data", (data) => {
+        lights.destroy();
+        res.json(JSON.parse(data));
+    });
+
+    lights.on("error", () => {
+        lights.destroy();
+        res.status(500);
+        res.send("Something went wrong whilst connecting to the lights - let us know if this happens.");
+    });
+
+    lights.on("timeout", () => {
+        lights.destroy();
+        res.status(504);
+        res.send("Connection to lights timed out - they're probably off.");
+    });
+}
+
+
 // Sets the lights to a static colour or preset
 // Uses req's type value to determine which
 const lightHandler = io => (req, res) => {
@@ -58,9 +95,9 @@ const lightHandler = io => (req, res) => {
     if (!script) {
         return;
     }
-    else if (script.length > 2048) {
+    else if (script.length > 1024) {
         res.status(400);
-        res.send("File is too large to process - cannot be larger than 2048 bytes");
+        res.send("File is too large to process - cannot be larger than 1024 bytes");
         return;
     }
 
@@ -69,8 +106,8 @@ const lightHandler = io => (req, res) => {
     lights.setTimeout(localSocketTimeout);
 
     lights.connect({
-        host: "192.168.1.179",
-        port: 8080
+        host: HOST,
+        port: PORT
     });
 
     lights.on("connect", () => {
@@ -95,10 +132,10 @@ const lightHandler = io => (req, res) => {
     lights.on("timeout", () => {
         lights.destroy();
         res.status(500);
-        res.send("Connection to lights timed out - they're probably off.")
+        res.send("Connection to lights timed out - they're probably off.");
     });
-
 }
+
 
 // Returns the names of all available preset files
 const presetHandler = (req, res) => {
@@ -115,6 +152,7 @@ const presetHandler = (req, res) => {
 }
 
 module.exports = {
+    pingHandler,
     lightHandler,
     presetHandler
 }
